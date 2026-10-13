@@ -1,0 +1,65 @@
+# constraints.lpf
+# Conector: J16
+# Panel: 64x64 con scan 1/32
+
+
+# RELOJ DEL SISTEMA (25 MHz)
+LOCATE COMP "clk" SITE "P6";
+IOBUF PORT "clk" IO_TYPE=LVCMOS33;
+FREQUENCY PORT "clk" 25 MHZ;
+
+# CONECTOR J8
+# RGB0 
+LOCATE COMP "r0" SITE "P7";   # J8 Pin 1
+LOCATE COMP "g0" SITE "M7";   # J8 Pin 2
+LOCATE COMP "b0" SITE "P8";   # J8 Pin 3
+
+# RGB1
+LOCATE COMP "r1" SITE "R8";   # J8 Pin 5
+LOCATE COMP "g1" SITE "M8";   # J8 Pin 6
+LOCATE COMP "b1" SITE "M9";   # J8 Pin 7
+
+# Pines de control y dirección
+LOCATE COMP "addr[0]" SITE "N5";   # A
+LOCATE COMP "addr[1]" SITE "N3";   # B
+LOCATE COMP "addr[2]" SITE "P3";   # C
+LOCATE COMP "addr[3]" SITE "P4";   # D
+LOCATE COMP "addr[4]" SITE "N4";   # E
+LOCATE COMP "clk_out" SITE "M3";   # Pin 13 - CLK
+LOCATE COMP "latch" SITE "N1";     # Pin 14 - LAT
+LOCATE COMP "oe" SITE "M4";        # Pin 15 - OE
+
+
+# Pines SPI conector J1
+LOCATE COMP "spi_cs" SITE "D4";
+LOCATE COMP "spi_sck" SITE "E4";
+LOCATE COMP "spi_mosi" SITE "D3";
+
+LOCATE COMP "rst" SITE "R7";   # Reset
+
+# ============================================
+# CONFIGURACIÓN I/O
+# ============================================
+IOBUF PORT "r0" IO_TYPE=LVCMOS33 DRIVE=8;
+IOBUF PORT "g0" IO_TYPE=LVCMOS33 DRIVE=8;
+IOBUF PORT "b0" IO_TYPE=LVCMOS33 DRIVE=8;
+IOBUF PORT "r1" IO_TYPE=LVCMOS33 DRIVE=8;
+IOBUF PORT "g1" IO_TYPE=LVCMOS33 DRIVE=8;
+IOBUF PORT "b1" IO_TYPE=LVCMOS33 DRIVE=8;
+
+IOBUF PORT "addr[0]" IO_TYPE=LVCMOS33 DRIVE=8;
+IOBUF PORT "addr[1]" IO_TYPE=LVCMOS33 DRIVE=8;
+IOBUF PORT "addr[2]" IO_TYPE=LVCMOS33 DRIVE=8;
+IOBUF PORT "addr[3]" IO_TYPE=LVCMOS33 DRIVE=8;
+IOBUF PORT "addr[4]" IO_TYPE=LVCMOS33 DRIVE=8;
+
+IOBUF PORT "clk_out" IO_TYPE=LVCMOS33 DRIVE=8;
+IOBUF PORT "latch" IO_TYPE=LVCMOS33 DRIVE=8;
+IOBUF PORT "oe" IO_TYPE=LVCMOS33 DRIVE=8;
+
+IOBUF PORT "rst" IO_TYPE=LVCMOS33 DRIVE=8;
+
+IOBUF PORT "spi_cs" IO_TYPE=LVCMOS33;
+IOBUF PORT "spi_sck" IO_TYPE=LVCMOS33;
+IOBUF PORT "spi_mosi" IO_TYPE=LVCMOS33;
+
