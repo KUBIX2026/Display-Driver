@@ -18,7 +18,7 @@ Esta entrega establece las bases teóricas del hardware. Consiste en la explicac
 
 ### Segunda Entrega: Lógica y Máquina de Estados
 Esta entrega documenta el flujo de control del módulo *Display Driver*. Se detalla cómo el sistema funciona como una máquina de estados con dos modos principales: un modo **Menú** (para la interfaz estática) y un modo **Juegos** (para la actualización dinámica a alta velocidad).
-* **[Ver Diagramas de Flujo y Estados (Entrega 2)](entregas/entrega_01/02%20-%20Diagrama%20de%20flujo.md)** **
+* **[Ver Diagramas de Flujo y Estados (Entrega 2)](entregas/entrega_01/02%20-%20Diagrama%20de%20flujo.md)**
 
 ---
 
