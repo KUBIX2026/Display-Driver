@@ -16,7 +16,7 @@ El procesador principal actúa como dispositivo Maestro (Controller) y la FPGA c
 * La línea `MISO` (`CIPO`) se mantiene inactiva (o en un estado constante) ya que nuestro driver de pantalla solo recibe datos y no necesita responder al controlador.
 * Una vez finalizada la transmisión del paquete de datos, la señal `CS` (o `NSS`) vuelve a su estado inactivo en alto.
 
-![Diagrama de tiempos SPI](imgs/spi_timing.png)
+![Diagrama de tiempos SPI](entregas/imgs/spi_timing.png)
 
 ### 1.2. Protocolo de Actualización de Sprites
 El desplazamiento de objetos gráficos en pantalla (sprites) requiere la sobrescritura de los datos previos en memoria. El flujo de actualización ejecutado por la lógica del sistema consta de los siguientes pasos secuenciales:
