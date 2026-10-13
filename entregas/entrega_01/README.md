@@ -51,6 +51,6 @@ Esta técnica de enmascaramiento por hardware libera por completo a la CPU (ESP3
 
 ## 4. Pruebas de Integración y Firmware (ESP32)
 
-Para validar la integridad del bus SPI y la decodificación de color (RGB565 a RGB555) en hardware, se desarrolló un firmware de prueba en C++ (Arduino IDE) para la ESP32. Este código transmite tramas de color de 40 bits activadas aproximadamente cada 3 segundos, o en una segunda versión, por un botón físico con anti-rebote digital, demostrando la separación de responsabilidades entre el procesamiento lógico (ESP32) y el renderizado (FPGA).
+Para validar la integridad del bus SPI y la decodificación de color (RGB565 a RGB555) en hardware, se desarrolló un firmware de prueba en C++ (Arduino IDE) para la ESP32. Este código transmite tramas de color de 40 bits que rotan entre varios colores automaticamente, o en una segunda versión, por un botón físico con anti-rebote digital, demostrando la separación de responsabilidades entre el procesamiento lógico (ESP32) y el renderizado (FPGA).
 
-**Código de prueba (Ubicado en la carpeta `firmware/`):**
+**Código de prueba (Ubicado en la carpeta [test_spi](https://github.com/KUBIX2026/Display-Driver/tree/main/entregas/entrega_01/codigo_verilog_testbench_waveform/test_spi):**
