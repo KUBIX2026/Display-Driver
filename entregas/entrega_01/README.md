@@ -1,3 +1,4 @@
+
 # Protocolos de Comunicación y Control de Pantalla (Display Driver)
 
 > Este repositorio centraliza el desarrollo del controlador de video (PPU) para el proyecto del curso Diseño Digital 1. Las pruebas iniciales, el control de la matriz LED a 8bpp y 5bpp, y los scripts de conversión de imágenes estáticas fueron desarrollados e iterados previamente. Para consultar el historial de commits, los diagramas iniciales y los videos de funcionamiento de esa etapa temprana, referirse a [Repositorio Base: Panel-Led-Image-Changer](https://github.com/Fdiaz718/Panel-Led-Image-Changer).
@@ -57,6 +58,13 @@ Para validar la integridad del bus SPI y la decodificación de color (RGB565 a R
 
 **Demostración de renderizado directo por hardware:**
 A continuación se observa a la ESP32 controlando el envío síncrono de colores e imágenes mediante el módulo SPI implementado, demostrando el barrido uniforme y libre de "ghosting".
-<video src="../imgs/test_cambio_auto.mp4" controls="controls" muted="muted" style="max-height:640px;"></video>
 
-<video src="../imgs/test_cambio_boton.mp4" controls="controls" muted="muted" style="max-height:640px;"></video>
+
+
+https://github.com/user-attachments/assets/214d80aa-c6ee-4473-b53e-f99c7fe6c2de
+
+
+
+https://github.com/user-attachments/assets/78efcff9-b6e3-412d-8489-34eec7e559a3
+
+
