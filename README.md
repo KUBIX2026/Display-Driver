@@ -30,9 +30,10 @@ Esta entrega demuestra la validación en hardware de la arquitectura. Se impleme
 
 El código fuente, las simulaciones y el firmware están organizados según los lineamientos de la rúbrica del curso:
 
-* **`codigo_verilog_testbench_waveform/`**: Contiene todo el código RTL (Verilog), los testbenches (`_TB.v`), los archivos de ondas (`.gtkw`) y el `Makefile` para la síntesis y simulación.
-* **`diagramas_flujo_bloques_estados/`**: Contiene las exportaciones en alta calidad (`.png` y `.pdf`) de los diagramas de la arquitectura general (`top`).
-* **`firmware/`**: Contiene el código en C/C++ (ej. `esp32_spi_test.ino`) para el microcontrolador que se encarga de enviar las tramas de prueba por el bus SPI.
-* **`entregas/`**: Carpeta histórica con la documentación `.md` y las imágenes de respaldo de las entregas teóricas.
+* **`entrega_XY/`**: Carpeta con la documentación `.md` y las imágenes de respaldo de las entregas teóricas
+* **`entrega_XY/codigo_verilog_sim/`**: Contiene todo el código RTL (Verilog), los testbenches (`_TB.v`), los archivos de ondas (`.gtkw`) y el `Makefile` para la síntesis y simulación.
+* **`entregas_XY/diagramas/`**: Contiene las exportaciones en alta calidad (`.png` y `.pdf`) de los diagramas de la arquitectura general (`top`).
+* **`entregas_XY/firmware/`**: Contiene el código en C/C++ (ej. `esp32_spi_test.ino`) para el microcontrolador que se encarga de enviar las tramas de prueba por el bus SPI.
+.
 
 ---
