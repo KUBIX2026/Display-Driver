@@ -54,3 +54,12 @@ Esta técnica de enmascaramiento por hardware libera por completo a la CPU (ESP3
 Para validar la integridad del bus SPI y la decodificación de color (RGB565 a RGB555) en hardware, se desarrolló un firmware de prueba en C++ (Arduino IDE) para la ESP32. Este código transmite tramas de color de 40 bits que rotan entre varios colores automaticamente, o en una segunda versión, por un botón físico con anti-rebote digital, demostrando la separación de responsabilidades entre el procesamiento lógico (ESP32) y el renderizado (FPGA).
 
 **Código de prueba (Ubicado en la carpeta [test_spi](https://github.com/KUBIX2026/Display-Driver/tree/main/entregas/entrega_01/codigo_verilog_testbench_waveform/test_spi):**
+
+**Demostración de renderizado directo por hardware:**
+A continuación se observa a la ESP32 controlando el envío síncrono de colores e imágenes mediante el módulo SPI implementado, demostrando el barrido uniforme y libre de "ghosting".
+
+<!-- Sintaxis directa de GitHub para videos -->
+<video src="../imgs/test_cambio_auto.mp4" controls="controls" muted="muted" style="max-height:640px;"></video>
+
+
+<video src="../imgs/test_cambio_boton.mp4" controls="controls" muted="muted" style="max-height:640px;"></video>
