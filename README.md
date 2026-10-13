@@ -14,7 +14,7 @@ Para cumplir con la metodología *top-down* del curso, la documentación y el di
 
 ### Primera Entrega: Protocolos y Arquitectura
 Esta entrega establece las bases teóricas del hardware. Consiste en la explicación detallada del protocolo de comunicación HUB75 para la matriz LED, la arquitectura de la VRAM y cómo se manejarán los sprites y transparencias mediante hardware (Chroma Key).
-* **[Ver Documentación Completa de la Entrega 1](entregas/entrega_01/Display%20Driver%20timing%20controller.md)**
+* **[Ver Documentación Completa de la (Entrega 1)](entregas/entrega_01/01%20Display%20Driver%20timing%20controller.md)**
 
 ### Segunda Entrega: Lógica y Máquina de Estados
 Esta entrega documenta el flujo de control del módulo *Display Driver*. Se detalla cómo el sistema funciona como una máquina de estados con dos modos principales: un modo **Menú** (para la interfaz estática) y un modo **Juegos** (para la actualización dinámica a alta velocidad).
