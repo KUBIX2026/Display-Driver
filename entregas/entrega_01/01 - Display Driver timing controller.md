@@ -59,7 +59,7 @@ El segundo diagrama propone una alternativa de diseño donde las señales de con
 
 La principal ventaja de este enfoque es que elimina la necesidad de implementar un reloj condicionado (gated clock) en el hardware. Bajo este esquema, la señal `oe` mantiene una longitud constante (calculada como el ancho del panel menos 3 ciclos de reloj), simplificando el diseño de la máquina de estados en el código HDL.
 
-![HUB75 timing suggestion](/wd2.png)
+![HUB75 timing suggestion](../imgs/wd2.png)
 
 Informacion tomada de [Moonbaseotago](http://www.moonbaseotago.com/hub75/) y [vanhunteradams](https://vanhunteradams.com/Protocols/SPI/SPI.html)
 
