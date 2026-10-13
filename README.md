@@ -12,13 +12,17 @@ El sistema implementa los periféricos RTL en una FPGA Lattice ECP5-25K (Colorli
 
 Para cumplir con la metodología *top-down* del curso, la documentación y el diseño se han estructurado en entregas incrementales. A continuación, puedes acceder a los detalles técnicos de cada fase del proyecto:
 
-### Primera Entrega: Protocolos y Arquitectura
-Esta entrega establece las bases teóricas del hardware. Consiste en la explicación detallada del protocolo de comunicación HUB75 para la matriz LED, la arquitectura de la VRAM y cómo se manejarán los sprites y transparencias mediante hardware (Chroma Key).
-* **[Ver Documentación Completa de la (Entrega 1)](entregas/entrega_01/01%20-%20Display%20Driver%20timing%20controller.md)**
+#### Primera Tarea: Protocolos y Arquitectura
+Esta tarea establece las bases teóricas del hardware. Consiste en la explicación detallada del protocolo de comunicación HUB75 para la matriz LED, la arquitectura de la VRAM y cómo se manejarán los sprites y transparencias mediante hardware (Chroma Key).
+* **[Ver Documentación Completa de la (Tarea 1)](entregas/entrega_01/01%20-%20Display%20Driver%20timing%20controller.md)**
 
-### Segunda Entrega: Lógica y Máquina de Estados
-Esta entrega documenta el flujo de control del módulo *Display Driver*. Se detalla cómo el sistema funciona como una máquina de estados con dos modos principales: un modo **Menú** (para la interfaz estática) y un modo **Juegos** (para la actualización dinámica a alta velocidad).
-* **[Ver Diagramas de Flujo y Estados (Entrega 2)](entregas/entrega_01/02%20-%20Diagrama%20de%20flujo.md)**
+#### Segunda Tarea: Lógica y Máquina de Estados
+Esta tarea documenta el flujo de control del módulo *Display Driver*. Se detalla cómo el sistema funciona como una máquina de estados con dos modos principales: un modo **Menú** (para la interfaz estática) y un modo **Juegos** (para la actualización dinámica a alta velocidad).
+* **[Ver Diagramas de Flujo y Estados (Tarea 2)](entregas/entrega_01/02%20-%20Diagrama%20de%20flujo.md)**
+
+### Primera Entrega: Prototipo de Comunicación SPI y Control de Hardware
+Esta entrega demuestra la validación en hardware de la arquitectura. Se implementó un firmware en la ESP32 que actúa como Maestro SPI y se comunica con la FPGA enviando tramas gráficas de 40 bits al presionar un botón físico. La FPGA decodifica exitosamente el color (pasando de RGB565 a RGB555) y modula la pantalla HUB75 en tiempo real.
+* **[Ver (Entrega 01)](entregas/entrega_01/README.md)**
 
 ---
 
