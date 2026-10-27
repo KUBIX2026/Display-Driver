@@ -61,7 +61,7 @@ Una vez completada la inicialización sin errores, el sistema registra este even
 ### 4.3 Recepción de Datos y Framebuffer
 Tras la inicialización del sistema y el paso a la "Pantalla Inicio", el display está listo para operar. El procesador principal envía los datos gráficos (ID de sprite, posición, fondo, etc.) hacia la FPGA a través de un bus SPI. La FPGA recibe estos datos y los almacena en su memoria interna (BRAM), que actúa como un "Framebuffer". El Display Driver lee continuamente este framebuffer y genera las señales eléctricas necesarias (barrido, reloj, latch) para encender los LEDs físicos de la matriz, mostrando la imagen final.
 
-## 4. Pruebas de Integración y Firmware (ESP32)
+## 5. Pruebas de Integración y Firmware (ESP32)
 
 Para validar la integridad del bus SPI y la decodificación de color (RGB565 a RGB555) en hardware, se desarrolló un firmware de prueba en C++ (Arduino IDE) para la ESP32. Este código transmite tramas de color de 40 bits que rotan entre varios colores automaticamente, o en una segunda versión, por un botón físico con anti-rebote digital, demostrando la separación de responsabilidades entre el procesamiento lógico (ESP32) y el renderizado (FPGA).
 
