@@ -50,6 +50,17 @@ El sistema gráfico procesa la transparencia de la siguiente manera:
 Esta técnica de enmascaramiento por hardware libera por completo a la CPU (ESP32) de calcular colisiones de píxeles o fusiones de imagen, permitiendo que los sprites tengan formas irregulares exactas sin destruir el escenario de fondo.
 
 
+## 4. Explicación del Display Driver según el Diagrama de Estados general:
+De acuerdo con el diagrama de flujo creado por el grupo, el bloque de inicialización del Display Driver (representado en color morado claro) se ejecuta como parte de la rutina de autodiagnóstico (Verificar Hardware) del sistema. Este consta de tres etapas principales: 
+### 4.1 Inicializar Display
+En esta etapa, el sistema envía los comandos de configuración inicial necesarios para preparar la matriz LED o la interfaz gráfica para recibir datos. En el contexto de un panel HUB75, esto implica configurar los registros internos para no leer archivos de imagen incorrectos, establecer los niveles de brillo (PWM) y asegurar que las señales de control (OE, LATCH, CLK) estén en sus estados de reposo seguros (por ejemplo, OE = 1 para apagar la pantalla y evitar "ghosting" mientras se configura). Adicionalmente, se define el color de transparencia como #0F081F; cualquier píxel con este valor no sobreescribirá el fondo, permitiendo el efecto de transparencia de los sprites. 
+
+### 4.2 Guardar estado de Display como inicializada
+Una vez completada la inicialización sin errores, el sistema registra este evento en una variable de estado (o flag). Esto es crucial para la máquina de estados principal, ya que le indica que el hardware gráfico está listo para recibir comandos de dibujo. Si este paso falla, el sistema abortaría la secuencia y encendería el "LED ROJO ON" de error general.   
+
+### 4.3 Recepción de Datos y Framebuffer
+Tras la inicialización del sistema y el paso a la "Pantalla Inicio", el display está listo para operar. El procesador principal envía los datos gráficos (ID de sprite, posición, fondo, etc.) hacia la FPGA a través de un bus SPI. La FPGA recibe estos datos y los almacena en su memoria interna (BRAM), que actúa como un "Framebuffer". El Display Driver lee continuamente este framebuffer y genera las señales eléctricas necesarias (barrido, reloj, latch) para encender los LEDs físicos de la matriz, mostrando la imagen final.
+
 ## 4. Pruebas de Integración y Firmware (ESP32)
 
 Para validar la integridad del bus SPI y la decodificación de color (RGB565 a RGB555) en hardware, se desarrolló un firmware de prueba en C++ (Arduino IDE) para la ESP32. Este código transmite tramas de color de 40 bits que rotan entre varios colores automaticamente, o en una segunda versión, por un botón físico con anti-rebote digital, demostrando la separación de responsabilidades entre el procesamiento lógico (ESP32) y el renderizado (FPGA).
