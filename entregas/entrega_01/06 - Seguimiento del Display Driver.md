@@ -10,10 +10,8 @@
 | T04 | Receptor SPI | Felipe Diaz | Hecho |
 | T05 | Decodificador de órdenes | Felipe Diaz | Hecho |
 | T06 | Prueba con la ESP32 | Felipe Diaz | Hecho |
-| T08 | Compositor (sprites sobre fondo) | Felipe Diaz | En diseño |
+| T07 | Compositor (sprites sobre fondo) | Felipe Diaz | En diseño |
 | T09 | Memorias de sprites y fondos | Felipe Diaz | En diseño |
-| T10 | Doble buffer | Sin definir | Por hacer |
-| T07 | Plan de pruebas | Sin definir | En diseño |
-Por hacer
-En diseño 
-## Limpieza del repositorio (Tarea 13)
+| T09 | Doble buffer | Sin definir | Por hacer |
+| T10 | Plan de pruebas | Sin definir | En diseño |
+
