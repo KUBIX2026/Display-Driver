@@ -2,7 +2,7 @@
 
 Consola NoNIENTENDO 
 
-Este documento define **qué hace** el Display Driver, **cómo se le habla** y **cómo se decide que algo está bien**. Los diagramas están en [`04_diagramas_display_driver.md`](04_diagramas_display_driver.md) y las pruebas en [`05_plan_de_pruebas.md`](05_plan_de_pruebas.md).
+Este documento define **qué hace** el Display Driver, **cómo se le habla** y **cómo se decide que algo está bien**. Los diagramas están en [`04 - Diagramas display driver.md`](04%20-%20Diagramas%20display%20driver.md).
 
 ---
 
