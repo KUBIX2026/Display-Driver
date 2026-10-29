@@ -1,4 +1,3 @@
-
 # Protocolos de Comunicación y Control de Pantalla (Display Driver)
 
 > Este repositorio centraliza el desarrollo del controlador de video (PPU) para el proyecto del curso Diseño Digital 1. Las pruebas iniciales, el control de la matriz LED a 8bpp y 5bpp, y los scripts de conversión de imágenes estáticas fueron desarrollados e iterados previamente. Para consultar el historial de commits, los diagramas iniciales y los videos de funcionamiento de esa etapa temprana, referirse a [Repositorio Base: Panel-Led-Image-Changer](https://github.com/Fdiaz718/Panel-Led-Image-Changer).
@@ -11,7 +10,7 @@ En este documento se detalla la interfaz de comunicación del módulo Display Dr
 - **Reloj Base:** 25 MHz.
 - **Profundidad de Color:** Renderizado por hardware a RGB555 (15 bits efectivos) mediante modulación PWM global de 5 bits por canal para evitar el *flicker* (parpadeo) perceptible en frecuencias de barrido altas.
 - **Recepción de información:** Protocolo SPI.
-- **Manejo de Sprites:** Se define el color "1xFFFF" como color transparente para mostrar correctamente los sprites sin interrumpir el fondo estatico.
+- **Manejo de Sprites:** Se define el color "#0F081F" como color transparente para mostrar correctamente los sprites sin interrumpir el fondo estatico.
 
 
 ## 2. Protocolo de Entrada: SPI y Decodificación Dinámica
@@ -31,7 +30,7 @@ Una vez decodificada la trama SPI, la información se almacena en la VRAM de la 
 
 - **Datos RGB (`R0, G0, B0, R1, G1, B1`):** Se envían 2 píxeles en paralelo (uno para la mitad superior y otro para la mitad inferior).
 - **Reloj (`clk_out`):** 64 pulsos de reloj desplazan y llenan los Shift Registers internos de una fila completa.
-- **Output Enable (`OE`):** Señal activa en bajo[cite: 8]. Debe ponerse en ALTO (apagar LEDs) mediante una ventana de *blanking* ampliada durante el cambio de fila para descargar la capacitancia parasitaria de los transistores del panel y evitar *ghosting* lumínico.
+- **Output Enable (`OE`):** Señal activa en bajo. Debe ponerse en ALTO (apagar LEDs) mediante una ventana de *blanking* ampliada durante el cambio de fila para descargar la capacitancia parasitaria de los transistores del panel y evitar *ghosting* lumínico.
 - **Latch (`LAT`):** Pulso síncrono para fijar los datos enviados a los registros de la pantalla.
 - **Dirección (`addr`):** 5 pines (A, B, C, D, E) para seleccionar cuál de las 32 filas físicas de la matriz se va a encender.
 
