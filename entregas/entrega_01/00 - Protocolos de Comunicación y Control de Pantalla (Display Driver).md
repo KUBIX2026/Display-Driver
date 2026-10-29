@@ -41,9 +41,9 @@ Para lograr que los sprites (personajes, obstáculos) se superpongan correctamen
 El sistema gráfico procesa la transparencia de la siguiente manera:
 
 1. **Estructura de la Trama:** La lógica del juego (ESP32) envía los comandos de dibujo a través de SPI utilizando la trama estándar de 40 bits: `[Comando] [ID_Objeto] [Pos X] [Pos Y] [Color/Datos]`.
-2. **Definición del Color Transparente:** Por convención técnica con el equipo encargado del desarrollo del software, se define un código de color RGB específico (por ejemplo, `0xFFFF`, u otro valor reservado) que el hardware interpreta exclusivamente como "píxel transparente".
+2. **Definición del Color Transparente:** Por convención técnica con el equipo encargado del desarrollo del software, se define un código de color RGB específico (`#0F081`) que el hardware interpreta exclusivamente como "píxel transparente".
 3. **Decisión del Hardware (Multiplexor):** Durante el barrido constante de la pantalla, cuando la FPGA lee la coordenada actual de la VRAM para enviarla al panel, el multiplexor evalúa el valor numérico del color del sprite:
-   - Si el color **coincide** con el código de transparencia (ej. `0xFFFF`), el multiplexor descarta la información del sprite y conmuta su salida para mostrar el color de la capa de fondo (Background).
+   - Si el color **coincide** con el código de transparencia (`#0F081F`), el multiplexor descarta la información del sprite y conmuta su salida para mostrar el color de la capa de fondo (Background).
    - Si el color **es distinto**, el multiplexor da prioridad a la capa del sprite (Foreground) y lo dibuja en pantalla.
 
 Esta técnica de enmascaramiento por hardware libera por completo a la CPU (ESP32) de calcular colisiones de píxeles o fusiones de imagen, permitiendo que los sprites tengan formas irregulares exactas sin destruir el escenario de fondo.
