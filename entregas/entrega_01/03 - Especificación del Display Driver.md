@@ -134,7 +134,7 @@ El barrido lee **siempre el buffer frontal**, que no cambia durante un frame. La
 Ambos casos superan el mínimo de 60 Hz fijado como criterio.
 
 
-## 11. Relación con lo ya implementado
+## 9. Relación con lo ya implementado
 
 El diseño anterior (entrega 01) escribía **un píxel por trama** con color de 24 bits. Esa parte se **adapta**: la trama deja de llevar color (salvo `SET_BG_COLOR`, útil para reutilizar la prueba de colores con la ESP32), la memoria pasa de 24 a 16 bits por píxel y se añaden la tabla de sprites(indica la resolución de cada sprite), las ROM, el compositor y el doble buffer. Los bloques de salida al panel (`scan_counters`, `delay_unit`, `panel_pwm`) y el receptor SPI se reutilizan. El estado de cada bloque está en el diagrama de bloques y en [`06_seguimiento_y_correcciones.md`](06_seguimiento_y_correcciones.md).
 
