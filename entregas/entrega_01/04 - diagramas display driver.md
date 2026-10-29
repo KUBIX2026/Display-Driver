@@ -5,7 +5,8 @@ Consola NoNIENTENDO
 
 El Display Driver vive en su propia FPGA. La lógica del juego (en las pruebas, una ESP32; en el sistema final, otra FPGA con el SoC) le manda tramas SPI, y él maneja el panel HUB75.
 
-<img width="1568" height="534" alt="01_contexto" src="https://github.com/user-attachments/assets/cb3b8751-0d8d-46c1-86bf-597f9afbd9d8" />
+<img width="1568" height="496" alt="image" src="https://github.com/user-attachments/assets/a7863a6f-2036-4aee-aa1d-8b6fd5e276f4" />
+
 
 **Partición hardware / software**
 
