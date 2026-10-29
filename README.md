@@ -6,6 +6,22 @@ El Display Driver, también denominado PPU (*Picture Processing Unit*), es el m�
 
 El proyecto utiliza una FPGA Lattice ECP5-25K, implementada en la plataforma Colorlight 5A-75E v8.2, y una ESP32 como plataforma de pruebas para la comunicación SPI.
 
+## Estructura del proyecto
+
+
+Display-Driver/
+├── README.md
+├── entregas/
+│   ├── entrega_01/
+│   │   ├── diagramas/
+│   │   ├── codigos_verilog_sim/
+│   │   ├── firmware/
+│   │   └── documentos de diseño (.md)
+│   └── entrega_02/
+│       ├── codigos_verilog_sim/
+│       └── firmware/
+└── imgs/
+
 ## Objetivo del proyecto
 
 El diseño del Display Driver se divide en dos funciones principales:
