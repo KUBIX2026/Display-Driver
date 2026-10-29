@@ -44,7 +44,7 @@ Es la parte central del diseño. Primero copia el fondo. Luego dibuja los sprite
 
 ## 5. Secuencia de un cuadro de juego
 
-<img width="1568" height="606" alt="image" src="https://github.com/user-attachments/assets/42f81f57-c7e0-4164-8198-b03e55639637" />
+<img width="886" height="1504" alt="image" src="https://github.com/user-attachments/assets/2daf0fcc-5455-4da1-82b3-171b497233a6" />
 
 
 ## 6. Decisiones de diseño y alternativas
