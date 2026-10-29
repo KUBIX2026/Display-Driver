@@ -51,7 +51,7 @@ La lógica del juego no envia imagenes completas, solo manda identificadores y p
 | `spi_cs` | in | Chip select, activo en bajo |
 | `spi_sck` | in | Reloj SPI |
 | `spi_mosi` | in | Datos, MSB primero |
-| `spi_mosi` | out | Sin uso, posibilidad en verificación |
+| `spi_miso` | out | Sin uso, posibilidad en verificación |
 | `r0 g0 b0` | out | Color de la mitad superior (filas 0–31) |
 | `r1 g1 b1` | out | Color de la mitad inferior (filas 32–63) |
 | `clk_out` | out | Reloj de desplazamiento del panel |
