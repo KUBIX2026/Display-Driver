@@ -1,28 +1,19 @@
 # Seguimiento del Display Driver
 
-## Estado
+## Estado de las tareas
 
-| Parte | Estado |
-|---|---|
-| Receptor SPI | Hecho |
-| Barrido del panel HUB75 y PWM | Hecho |
-| Prueba con la ESP32 | Hecha |
-| Especificación (tramas, registros, errores) | En diseño |
-| Diagramas | En diseño |
-| Plan de pruebas | En diseño |
-| Compositor (sprites sobre fondo) | Por hacer |
-| Memorias de sprites y fondos | Por hacer |
-| Doble buffer | Por hacer |
-
-## En GitHub
-
-- Crear un **issue** por cada parte de la tabla, con responsable y fecha.
-- Hacer commits con mensajes claros y abrir el **pull request** al repositorio general.
-
-## Limpieza del repositorio
-
-1. Borrar las marcas `[cite: 8]`, `[cite: 10]` que quedaron en el texto.
-2. Borrar el `)]` suelto de la sección 1.1.
-3. Cambiar `0xFFFF` / `1xFFFF` por `#0F081F` en todos lados.
-4. Dejar la trama en **40 bits** (hoy aparece 32 en un documento y 40 en otro).
-5. Que las rutas del README coincidan con las carpetas reales.
+| ID | Tarea | Responsable | Estado |
+|---|---|---|---|
+| T01 | Especificación (tramas, registros, errores) | Felipe Diaz | Hecho, sujeto a cambios |
+| T02 | Diagramas | Felipe Diaz | Hecho, sujeto a cambios|
+| T03 | Verificación modulos de barrido del panel HUB75 y PWM | Felipe Diaz | Hecho |
+| T04 | Receptor SPI | Felipe Diaz | Hecho |
+| T05 | Decodificador de órdenes | Felipe Diaz | Hecho |
+| T06 | Prueba con la ESP32 | Felipe Diaz | Hecho |
+| T08 | Compositor (sprites sobre fondo) | Felipe Diaz | En diseño |
+| T09 | Memorias de sprites y fondos | Felipe Diaz | En diseño |
+| T10 | Doble buffer | Sin definir | Por hacer |
+| T07 | Plan de pruebas | Sin definir | En diseño |
+Por hacer
+En diseño 
+## Limpieza del repositorio (Tarea 13)
