@@ -28,10 +28,6 @@ Es la parte central del diseño. Primero copia el fondo. Luego dibuja los sprite
 
 <img width="1130" height="3806" alt="image" src="https://github.com/user-attachments/assets/84d50e3e-7407-49f5-b308-9b622a3a6504" />
 
-- La ROM tarda 1 ciclo en responder, por eso la posición `(px, py)` se retrasa 1 ciclo para llegar junto con el color.
-- `px` y `py` son enteros con signo: así `X = −5` produce columnas −5…, que se descartan sin escribirse.
-- El tamaño de cada sprite sale de `sprite_desc[SPRITE_ID]` (`base`, `w`, `h`), de modo que sprites de distinto tamaño usan el mismo hardware.
-
 ## 4. Máquinas de estados
 
 ### 4.1 Receptor SPI
