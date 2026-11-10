@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Generador de pixel de texto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+Condensed:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--paper:#f2f4f7;--sheet:#fbfcfd;--grid:#e4e8ee;--ink:#1b2231;--muted:#5a6477;--line:#2b3346;--accent:#2c56c9;--on:#d9381e;--sig:#a8296a;--ok:#1d8a3a;
+--n-in:#fdfbe1;--n-calc:#cde8bf;--n-ram:#f0c9f7;--n-q:#fff04a;--n-rom:#acd8e6;--n-zero:#fcdcdc;--n-one:#98ec92;--n-st:#fff;--led-off:#20242c;
+--sans:"IBM Plex Sans",system-ui,sans-serif;--cond:"IBM Plex Sans Condensed","Arial Narrow",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0f141c;--sheet:#141a24;--grid:#1d2533;--ink:#e3e8f1;--muted:#97a3b8;--line:#c5cede;--accent:#7ea4ff;--on:#ff6a4d;--sig:#ff86c2;--ok:#5fd47f;
+--n-in:#45421f;--n-calc:#2f5225;--n-ram:#5a2d63;--n-q:#625a1a;--n-rom:#22556a;--n-zero:#6a3434;--n-one:#25643a;--n-st:#1b2230;--led-off:#0b0d11;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#0f141c;--sheet:#141a24;--grid:#1d2533;--ink:#e3e8f1;--muted:#97a3b8;--line:#c5cede;--accent:#7ea4ff;--on:#ff6a4d;--sig:#ff86c2;--ok:#5fd47f;
+--n-in:#45421f;--n-calc:#2f5225;--n-ram:#5a2d63;--n-q:#625a1a;--n-rom:#22556a;--n-zero:#6a3434;--n-one:#25643a;--n-st:#1b2230;--led-off:#0b0d11;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px));display:grid;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+h1{font-family:var(--cond);font-weight:700;font-size:clamp(24px,3.2vw,34px);margin:0;text-wrap:balance}
+.sub{margin:2px 0 0;color:var(--muted);font-family:var(--mono);font-size:12.5px}
+.scenes{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.scenes button{font:500 12.5px var(--mono);color:var(--muted);background:transparent;border:1px solid var(--grid);border-radius:4px;padding:5px 9px;cursor:pointer}
+.scenes button[aria-current="true"]{color:var(--sheet);background:var(--ink);border-color:var(--ink)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.stagewrap{overflow-x:auto;background:var(--sheet);border:1px solid var(--grid);border-radius:6px;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px}
+#stage{display:block;width:100%;min-width:820px;height:auto}
+.panel{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px 28px;align-items:start}
+@media (max-width:760px){.panel{grid-template-columns:minmax(0,1fr)}}
+.eyebrow{font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0}
+.panel h2{font-family:var(--cond);font-weight:700;font-size:22px;margin:2px 0 6px;text-wrap:balance}
+.panel p{margin:0;max-width:68ch}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ctl button{font:600 14px var(--sans);border:1px solid var(--line);background:var(--sheet);color:var(--ink);border-radius:4px;padding:8px 14px;cursor:pointer;min-height:40px}
+.ctl button.primary{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+.ctl button:disabled{opacity:.4;cursor:default}
+.count{font:12.5px var(--mono);color:var(--muted);width:100%}
+.sim{display:grid;gap:10px;border-top:1px solid var(--grid);padding-top:14px}
+.sim .row{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.sim label{font:500 13px var(--mono)}
+.sim input{width:64px;font:15px var(--mono);padding:5px 6px;border:1px solid var(--line);border-radius:4px;background:var(--sheet);color:var(--ink)}
+.simgrid{display:flex;flex-wrap:wrap;gap:20px 32px;align-items:flex-start}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;font:13px var(--mono);min-width:420px}
+th,td{text-align:left;padding:4px 10px;border-bottom:1px solid var(--grid);white-space:nowrap}
+th{color:var(--muted);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(8,16px);gap:3px;padding:6px;background:#0b0d11;border-radius:4px;width:max-content}
+.cell{width:16px;height:16px;border-radius:50%;background:var(--led-off)}
+.cell.on{background:var(--on)}.cell.sel{outline:2px solid #fff;outline-offset:1px}
+.hint{font:12.5px var(--mono);color:var(--muted)}
+svg text{font-family:var(--sans);font-size:14px;fill:var(--ink)}
+svg .mono{font-family:var(--mono)}svg .sm{font-size:12px}svg .xs{font-size:10.5px}svg .b{font-weight:600}
+svg .ttl{font-family:var(--cond);font-weight:700;font-size:15px}
+svg .lbl{font-family:var(--mono);font-size:11.5px;fill:var(--muted)}
+svg .ann{font-family:var(--mono);font-size:12px;fill:var(--on);font-weight:600}
+.w{fill:none;stroke:var(--line);stroke-width:1.6}
+.shape{stroke:var(--line);stroke-width:2}
+.n-in .shape{fill:var(--n-in)}.n-calc .shape{fill:var(--n-calc)}.n-ram .shape{fill:var(--n-ram)}.n-q .shape{fill:var(--n-q)}.n-rom .shape{fill:var(--n-rom)}.n-zero .shape{fill:var(--n-zero)}.n-one .shape{fill:var(--n-one)}.n-st .shape{fill:var(--n-st)}
+.node.hl .shape{stroke:var(--accent);stroke-width:4}
+.ahp{fill:var(--line)}
+.el{opacity:0;transition:opacity .55s ease}.el.on{opacity:1}
+.cellr{fill:var(--sheet);stroke:var(--line);stroke-width:1}
+.cellr.sel{fill:color-mix(in srgb,var(--accent) 30%,var(--sheet));stroke:var(--accent);stroke-width:3}
+.dot{fill:var(--ink)}.dot.off{fill:none;stroke:var(--grid)}
+.stripe{fill:color-mix(in srgb,var(--accent) 18%,transparent);stroke:var(--accent);stroke-width:1.5}
+.ring{fill:none;stroke:var(--on);stroke-width:3}
+@media (prefers-reduced-motion:reduce){.el{transition:none}}
+</style></head><body>
+<div class="wrap">
+<header><div><h1>Generador de pixel de texto</h1>
+<p class="sub">Coordenadas (col, row) → celda 8×8 → RAM de texto → ROM de fuentes → Pixel_text</p></div>
+<ul class="scenes" id="scenes"></ul></header>
+
+<div class="stagewrap">
+<svg id="stage" viewBox="0 0 1200 700" role="img" aria-label="Diagrama de flujo del generador de pixel de texto y su ejemplo con celdas 8×8">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path class="ahp" d="M0,0 L10,5 L0,10z"/></marker></defs>
+<g>
+<path class="w" d="M250,44 V64" marker-end="url(#ah)"/>
+<path class="w" d="M250,110 V130" marker-end="url(#ah)"/>
+<path class="w" d="M250,190 V210" marker-end="url(#ah)"/>
+<path class="w" d="M250,270 V290" marker-end="url(#ah)"/>
+<path class="w" d="M250,350 V380" marker-end="url(#ah)"/><text x="260" y="372" class="sm">sí</text>
+<path class="w" d="M250,440 V460" marker-end="url(#ah)"/>
+<path class="w" d="M250,520 V540" marker-end="url(#ah)"/>
+<path class="w" d="M250,600 V630" marker-end="url(#ah)"/><text x="260" y="622" class="sm">sí</text>
+<path class="w" d="M120,320 H58 V226" marker-end="url(#ah)"/><text x="82" y="312" class="sm">no</text>
+<path class="w" d="M120,570 H28 V226" marker-end="url(#ah)"/><text x="62" y="562" class="sm">no</text>
+<path class="w" d="M58,170 V87 H118" marker-end="url(#ah)"/>
+<g class="node n-st" id="n-start"><rect class="shape" x="190" y="10" width="120" height="34" rx="17"/><text x="250" y="32" text-anchor="middle">Inicio</text></g>
+<g class="node n-in" id="n-in"><rect class="shape" x="120" y="64" width="260" height="46" rx="3"/><text x="250" y="83" text-anchor="middle" class="sm b">Recibe coordenadas</text><text x="250" y="101" text-anchor="middle" class="mono sm">col y Row</text></g>
+<g class="node n-calc" id="n-addr"><rect class="shape" x="120" y="130" width="260" height="60" rx="3"/><text x="250" y="150" text-anchor="middle" class="sm b">Calcula dirección de texto</text><text x="250" y="172" text-anchor="middle" class="mono xs">Ram_text = {col[5:3], Row[5:3]}</text></g>
+<g class="node n-ram" id="n-ram"><rect class="shape" x="120" y="210" width="260" height="60" rx="3"/><text x="250" y="230" text-anchor="middle" class="sm b">Lee la RAM → letra de la matriz</text><text x="250" y="252" text-anchor="middle" class="mono xs">char_code = RAM[Ram_text]</text></g>
+<g class="node n-q" id="n-q1"><polygon class="shape" points="250,290 380,320 250,350 120,320"/><text x="250" y="318" text-anchor="middle" class="xs">¿Ram_text</text><text x="250" y="331" text-anchor="middle" class="xs">contiene texto?</text></g>
+<g class="node n-rom" id="n-rom"><rect class="shape" x="120" y="380" width="260" height="60" rx="3"/><text x="250" y="400" text-anchor="middle" class="sm b">Calcula el pixel de dibujado</text><text x="250" y="422" text-anchor="middle" class="mono xs">ROM_addr = {char_code, Row[2:0]}</text></g>
+<g class="node n-calc" id="n-font"><rect class="shape" x="120" y="460" width="260" height="60" rx="3"/><text x="250" y="480" text-anchor="middle" class="sm b">Verifica si el pixel es activo</text><text x="250" y="502" text-anchor="middle" class="mono xs">font_rom = ROM[ROM_addr]</text></g>
+<g class="node n-q" id="n-q2"><polygon class="shape" points="250,540 380,570 250,600 120,570"/><text x="250" y="568" text-anchor="middle" class="xs">¿font_rom tiene</text><text x="250" y="581" text-anchor="middle" class="xs">pixel activo?</text></g>
+<g class="node n-one" id="n-one"><rect class="shape" x="170" y="630" width="160" height="40" rx="3"/><text x="250" y="655" text-anchor="middle" class="mono sm b">Pixel_text = 1</text></g>
+<g class="node n-zero" id="n-zero"><rect class="shape" x="6" y="170" width="104" height="56" rx="3"/><text x="58" y="193" text-anchor="middle" class="xs">no pinta nada</text><text x="58" y="211" text-anchor="middle" class="mono xs b">Pixel_text = 0</text></g>
+</g>
+<g transform="translate(520,0)">
+<g id="g1" class="el"><text x="20" y="34" class="ttl">Primero · dividir en celdas 8×8</text><text x="20" y="54" class="lbl">Row[5:3] · Col[5:3] eligen la celda</text><g id="grid" transform="translate(20,70)"></g>
+<text x="20" y="330" class="lbl">pantalla 64×64 px = 8×8 celdas</text></g>
+<g id="c0" class="el"><text x="20" y="352" class="ann">entrada (3, 0) → celda (0, 0)</text></g>
+<g id="g2" class="el"><text x="320" y="34" class="ttl">Tercero · código de la celda</text><text x="320" y="54" class="lbl">RAM de texto: un código por celda</text><g id="ramstrip" transform="translate(320,66)"></g>
+<text x="320" y="122" class="ann">celda (0, 0) → 65 = "A"</text></g>
+<g id="g3" class="el"><text x="320" y="152" class="ttl">ROM de fuentes · glifo "A"</text><g id="glyph" transform="translate(354,166)"></g>
+<text x="320" y="414" class="mono sm">ROM_addr = {65, Row[2:0]} = 65·8 + 0</text></g>
+<g id="g4" class="el"><circle class="ring" id="ringc" r="14"/><text x="320" y="436" class="ann">Col[2:0] = 3 → bit 3 de la fila 0</text></g>
+<g id="g5" class="el"><rect class="shape" x="320" y="450" width="170" height="52" rx="3" style="fill:var(--n-one)"/><text x="405" y="473" text-anchor="middle" class="sm b">Sí tiene pixel</text><text x="405" y="491" text-anchor="middle" class="sm">→ dibuja</text>
+<rect class="shape" x="500" y="450" width="170" height="52" rx="3" style="fill:var(--n-zero)"/><text x="585" y="473" text-anchor="middle" class="sm b">No tiene pixel</text><text x="585" y="491" text-anchor="middle" class="sm">→ no dibuja nada</text></g>
+</g>
+</svg></div>
+
+<section class="panel"><div><p class="eyebrow" id="eb"></p><h2 id="tt"></h2><p id="dd"></p></div>
+<div class="ctl"><button id="prev">Anterior</button><button id="next" class="primary">Siguiente</button><button id="play">Reproducir</button><span class="count" id="cnt"></span></div></section>
+
+<section class="sim"><p class="eyebrow">Simulación</p>
+<div class="row"><label>col (0–63) <input id="ic" type="number" min="0" max="63" value="3"></label><label>row (0–63) <input id="ir" type="number" min="0" max="63" value="0"></label>
+<span class="hint">RAM de ejemplo: celdas (0,0)…(3,0) = 65 A, 48 0, 72 H, 77 M</span></div>
+<div class="simgrid"><div class="tablewrap"><table><thead><tr><th>Paso</th><th>Valor</th></tr></thead><tbody id="tb"></tbody></table></div>
+<figure style="margin:0;display:grid;gap:6px"><div class="grid" id="sg"></div><figcaption class="hint" id="sc"></figcaption></figure></div></section>
+</div>
+<script>
+(function(){
+const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+const FONT={65:[0x18,0x24,0x42,0x7E,0x42,0x42,0x42,0x00],48:[0x3C,0x42,0x46,0x5A,0x62,0x42,0x3C,0x00],72:[0x42,0x42,0x42,0x7E,0x42,0x42,0x42,0x00],77:[0x42,0x66,0x5A,0x42,0x42,0x42,0x42,0x00]};
+const RAM={};[65,48,72,77].forEach((c,i)=>RAM[i*8]=c); // {col[5:3],row[5:3]} → col celda i, row celda 0
+const ex=(t,a,s)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(s)e.textContent=s;return e};
+const G=$('grid');for(let r=0;r<8;r++)for(let c=0;c<8;c++)G.appendChild(ex('rect',{x:c*30,y:r*30,width:30,height:30,class:'cellr'+(!r&&!c?' sel':'')}));
+const RS=$('ramstrip');[65,48,72,77,0,0,0,0].forEach((v,i)=>{RS.appendChild(ex('rect',{x:i*44,y:0,width:44,height:34,class:'cellr'+(i?'':' sel')}));RS.appendChild(ex('text',{x:i*44+22,y:22,'text-anchor':'middle',class:'mono sm'},v||'·'))});
+const GL=$('glyph'),S=26;FONT[65].forEach((b,r)=>{GL.appendChild(ex('text',{x:-8,y:r*S+S/2+4,'text-anchor':'end',class:'lbl'},r));for(let c=0;c<8;c++)GL.appendChild(ex('circle',{cx:c*S+S/2,cy:r*S+S/2,r:7,class:'dot'+((b>>(7-c))&1?'':' off')}))});
+for(let c=0;c<8;c++)GL.appendChild(ex('text',{x:c*S+S/2,y:8*S+14,'text-anchor':'middle',class:'lbl'},c));
+GL.insertBefore(ex('rect',{x:-2,y:0,width:8*S+4,height:S,class:'stripe',id:'stripe'}),GL.firstChild);
+$('ringc').setAttribute('transform','translate(354,166) translate('+(3*S+S/2)+','+(S/2)+')');
+const SC=['Algoritmo','Celdas 8×8','Código de celda','Pixel','Resultado'];
+const S0=['g1'],ST=[
+{sc:0,t:'El algoritmo',d:'Para cada pixel (col, row) el módulo decide si pertenece a una letra. Primero localiza la celda de 8×8 que contiene al pixel, lee qué carácter hay en ella y consulta la fuente para saber si ese pixel del carácter está encendido. Si no hay texto o el pixel está apagado, no pinta nada.',hl:[],show:[]},
+{sc:1,t:'Primero: dividir en celdas de 8×8',d:'La pantalla se divide en una cuadrícula de 8×8 celdas. Cada celda alberga un carácter de 8×8 pixeles. Los bits altos Col[5:3] y Row[5:3] identifican la celda (equivale a col/8 y row/8).',hl:['n-in','n-addr'],show:['g1']},
+{sc:1,t:'Segundo: asignar celda',d:'La coordenada de entrada (3, 0) cae en la celda (0, 0) de una cuadrícula cuyo último elemento es (7, 7). Dentro de la celda quedan los bits bajos: Col[2:0] = 3 y Row[2:0] = 0.',hl:['n-in','n-addr'],show:['g1','c0']},
+{sc:2,t:'Tercero: código de la celda',d:'Ram_text = {col[5:3], Row[5:3]} direcciona la RAM de texto, que guarda un código por celda: 65 (A), 48, 72, 77… Si la celda no contiene texto, Pixel_text = 0 y el flujo vuelve a recibir coordenadas.',hl:['n-ram','n-q1'],show:['g1','c0','g2']},
+{sc:3,t:'Dirección en la ROM de fuentes',d:'ROM_addr = {char_code, Row[2:0]}. El código 65 elige el glifo de la letra A y Row[2:0] elige una de sus 8 filas (aquí la fila 0).',hl:['n-rom'],show:['g1','c0','g2','g3']},
+{sc:3,t:'Cuarto: verificar el pixel',d:'Se lee la fila del glifo (font_rom) y se mira el bit que corresponde a Col[2:0]. Aquí el bit 3 de la fila 0 está encendido.',hl:['n-font','n-q2'],show:['g1','c0','g2','g3','g4']},
+{sc:4,t:'Resultado',d:'Si font_rom tiene el pixel activo, Pixel_text = 1 y el pixel se dibuja. Si no, Pixel_text = 0 y no se pinta nada. En el ejemplo (3, 0) el pixel está activo, por lo que Pixel_text = 1.',hl:['n-one','n-zero'],show:['g1','c0','g2','g3','g4','g5']}];
+const ids=['g1','c0','g2','g3','g4','g5'];let i=0,tm=null;
+$('scenes').innerHTML='';SC.forEach((n,k)=>{const li=document.createElement('li'),b=document.createElement('button');b.textContent=(k+1)+'. '+n;b.onclick=()=>go(ST.findIndex(s=>s.sc===k));li.appendChild(b);$('scenes').appendChild(li)});
+function go(n){i=Math.max(0,Math.min(ST.length-1,n));const s=ST[i];
+ids.forEach(d=>$(d).classList.toggle('on',s.show.includes(d)));
+document.querySelectorAll('.node').forEach(e=>e.classList.toggle('hl',s.hl.includes(e.id)));
+$('eb').textContent='Escena '+(s.sc+1)+' · '+SC[s.sc];$('tt').textContent=s.t;$('dd').textContent=s.d;
+$('cnt').textContent='Paso '+(i+1)+' de '+ST.length;$('prev').disabled=!i;$('next').disabled=i===ST.length-1;
+document.querySelectorAll('#scenes button').forEach((b,k)=>b.setAttribute('aria-current',k===s.sc))}
+$('prev').onclick=()=>{stop();go(i-1)};$('next').onclick=()=>{stop();go(i+1)};
+function stop(){if(tm){clearInterval(tm);tm=null;$('play').textContent='Reproducir'}}
+$('play').onclick=()=>{if(tm)return stop();if(i===ST.length-1)go(0);$('play').textContent='Pausar';tm=setInterval(()=>{if(i>=ST.length-1)return stop();go(i+1)},3200)};
+// Simulación
+const sg=$('sg');for(let k=0;k<64;k++){const d=document.createElement('div');d.className='cell';sg.appendChild(d)}
+function sim(){let c=Math.max(0,Math.min(63,+$('ic').value||0)),r=Math.max(0,Math.min(63,+$('ir').value||0));
+const cc=c>>3,rc=r>>3,ra=cc*8+rc,code=RAM[ra]||0,cells=sg.children;[...cells].forEach(e=>e.className='cell');
+let rows=[['Entrada (col, row)','('+c+', '+r+')'],['Celda (col[5:3], Row[5:3])','('+cc+', '+rc+')'],['Ram_text','{'+cc+', '+rc+'} = '+ra]];
+let px=0;if(!code){rows.push(['char_code','0 → sin texto'])}else{
+const ch=String.fromCharCode(code),rr=r&7,cb=c&7,ad=code*8+rr,f=FONT[code][rr];px=(f>>(7-cb))&1;
+rows.push(['char_code',code+' = "'+ch+'"'],['ROM_addr','{'+code+', '+rr+'} = '+ad],['font_rom','0b'+f.toString(2).padStart(8,'0')],['Bit Col[2:0]',cb+' → '+px]);
+FONT[code].forEach((b,y)=>{for(let x=0;x<8;x++)cells[y*8+x].classList.toggle('on',!!((b>>(7-x))&1))});cells[rr*8+cb].classList.add('sel')}
+rows.push(['Pixel_text',px]);$('tb').innerHTML=rows.map(a=>'<tr><td>'+a[0]+'</td><td>'+a[1]+'</td></tr>').join('');
+$('sc').textContent=code?'Glifo "'+String.fromCharCode(code)+'" · pixel marcado':'Celda sin texto'}
+$('ic').oninput=sim;$('ir').oninput=sim;sim();go(0);
+})();
+</script></body></html>
