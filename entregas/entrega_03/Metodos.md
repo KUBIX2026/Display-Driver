@@ -1,6 +1,6 @@
-# Arquitectura del Driver de Panel LED (Texto, Sprites y Fondo)
+#  Driver de Panel LED (Texto, Sprites y Fondo)
 
-Este módulo documenta e implementa el controlador lógico encargado del dibujado 2D y la generación de señales de hardware para un panel LED. La arquitectura utiliza un flujo de renderizado único que procesa la pantalla píxel a píxel, evaluando múltiples capas visuales concurrentes.
+Documenta e implementa el controlador lógico encargado del dibujado  y la generación de señales de hardware para el LED. La arquitectura utiliza diagramas de flujo  procesa la pantalla píxel a píxel, evaluando múltiples capas visuales concurrentes.
 
 ## Jerarquía de Renderizado
 
