@@ -21,7 +21,7 @@ Basado en arquitecturas tradicionales de rasterización por hardware, la pantall
 * **Extracción en ROM:** Si el identificador no es 0 (celda vacía), los bits inferiores (`Row[2:0]`) se combinan con el identificador para leer la fila de píxeles correcta desde la ROM del sprite (`Sprite_row`).
 * **Manejo de Transparencia:** Cada píxel almacena datos RGB en 3 bits. El valor `000` se designa como canal alfa puro (transparente), forzando a la lógica a ignorar el sprite e imprimir el contenido de la capa inferior.
 
-![Esquemático: Generador de Píxel de Sprite y direccionamiento RAM/ROM](espacio_para_imagen_generador_sprite.png)
+![Esquemático: Generador de Píxel de Sprite y direccionamiento RAM/ROM](entregas/imgs/flujo_renderizado.png)
 
 ## Generador de Texto
 
