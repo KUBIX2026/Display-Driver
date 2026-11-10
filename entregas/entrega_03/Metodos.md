@@ -1,85 +1,55 @@
-# Hardware Sprite Renderer (Adaptación 64x64)
+# Arquitectura del Driver de Panel LED (Texto, Sprites y Fondo)
 
-Módulo lógico para el dibujado de sprites por hardware mediante una máquina de estados finitos (FSM). Esta adaptación está ajustada para pantallas o matrices de baja resolución.
+Este módulo documenta e implementa el controlador lógico encargado del dibujado 2D y la generación de señales de hardware para un panel LED. La arquitectura utiliza un flujo de renderizado único que procesa la pantalla píxel a píxel, evaluando múltiples capas visuales concurrentes.
 
+## Jerarquía de Renderizado
 
-## Arquitectura FSM (Controlador de Dibujado)
+El núcleo del controlador determina el color final de cada coordenada (`col`, `row`) aplicando un orden estricto de prioridad de tres niveles (sprite > texto > fondo):
 
-El ciclo de evaluación ocurre por cada línea horizontal (Y=0 a Y=63). Los estados base del sistema son:
+* **Nivel 1 (Sprite):** El módulo comprueba si en la celda actual hay asignado un sprite y si el píxel específico no es de un color transparente. Si `sprite == 1`, se emite su color `Color_out (R, G, B)` y se descartan las capas inferiores.
+* **Nivel 2 (Texto):** Si la capa del sprite está vacía o es transparente, se consulta la matriz de caracteres. Si el píxel forma parte del trazo de una letra (`Pixel_text == 1`), se utiliza el color de fuente asignado.
+* **Nivel 3 (Fondo):** En ausencia de sprites o texto, el sistema recurre a la memoria de imagen general, extrayendo el píxel base usando la dirección unificada `PIX_ADDR = {ROW<<6, COL}`.
 
-* **REG_POS:** Latch de las coordenadas base del sprite.
-* **ACTIVE:** Validación de presencia del sprite en el eje Y actual.
-* **WAIT_POS:** Sincronización del barrido del hardware con el inicio en X del sprite.
-* **SPR_LINE:** Extracción de píxeles desde memoria y activación de la señal de dibujado.
-* **WAIT_DATA:** Ciclo de latencia / apagado de señal.
-* **IDLE:** Reposo hasta recibir la señal `line == 1` de la siguiente iteración.
+![Diagrama de flujo: Jerarquía de renderizado y algoritmo de prioridad](espacio_para_imagen_flujo_renderizado.png)
+*(Reemplaza `espacio_para_imagen_flujo_renderizado.png` con la ruta de tu imagen en el repositorio)*
 
-## Diagrama de Flujo del Controlador
+## Generador de Hardware Sprites
 
-*(Insertar aquí el diagrama de flujo documentando las transiciones de la FSM)*
+Basado en arquitecturas tradicionales de rasterización por hardware, la pantalla de 64x64 píxeles se segmenta conceptualmente en una cuadrícula de celdas de 8x8 píxeles.
 
+* **Indexación de RAM:** Los bits superiores de las coordenadas de dibujo (`Row[5:3]` y `Col[5:3]`) se concatenan para calcular `ram_addr`, la dirección en la memoria RAM que indica qué `Sprite_ID` ocupa esa celda.
+* **Extracción en ROM:** Si el identificador no es 0 (celda vacía), los bits inferiores (`Row[2:0]`) se combinan con el identificador para leer la fila de píxeles correcta desde la ROM del sprite (`Sprite_row`).
+* **Manejo de Transparencia:** Cada píxel almacena datos RGB en 3 bits. El valor `000` se designa como canal alfa puro (transparente), forzando a la lógica a ignorar el sprite e imprimir el contenido de la capa inferior.
 
-# Repositorio Base: Generador de Texto para Pantalla LCD 64x64
+![Esquemático: Generador de Píxel de Sprite y direccionamiento RAM/ROM](espacio_para_imagen_generador_sprite.png)
 
-Este repositorio contiene la arquitectura mínima en Verilog/VHDL para implementar un generador de caracteres en una pantalla gráfica de 64x64 píxeles utilizando una fuente de 8x8.
+## Generador de Texto
 
----
+Para procesar las fuentes y cadenas de caracteres, se reutiliza la división de celdas de 8x8 con memorias de propósito específico.
 
-##  Módulos Principales
+* **Decodificación de Caracteres:** La dirección base `Ram_text` apunta a una memoria que devuelve el código ASCII/alfanumérico del carácter (ej. 65 para 'A') contenido en esa cuadrícula.
+* **Mapeo de Fuentes:** Se lee un vector binario desde la ROM de fuentes usando la fila del píxel (`font_rom = ROM[ROM_addr]`). Se verifica si el bit posicional correspondiente a `Col[2:0]` está en estado alto (activo) o bajo (vacío) para decidir si se emite el texto o el fondo.
 
-* **`sync_counters.v`**: Maneja los contadores del barrido (`CounterX` de 0 a 63, `CounterY` de 0 a 63).
-* **`character_ram.v`**: Memoria de $8 \times 8$ (64 bytes) que almacena la matriz de texto ASCII actual a desplegar.
-* **`font_rom.v`**: Memoria de solo lectura que almacena el patrón gráfico binario de la tipografía (matriz $8 \times 8$).
-* **`lcd_controller.v`**: Orquestador principal que toma las direcciones de lectura, concatena los bus de datos y envía los píxeles a la pantalla.
+![Esquemático: Generador de Píxel de Texto e indexación de fuentes](espacio_para_imagen_generador_texto.png)
 
----
+## Síntesis del Driver y Controlador HUB75 (FSM)
 
-## Mapa de Direccionamiento de Memoria
+La interconexión de la lógica de píxeles con la matriz física se orquesta mediante una máquina de estados finitos (FSM) acoplada a una ruta de datos basada en contadores. El hardware se encarga de bombear ráfagas de 64 píxeles en serie para la mitad superior e inferior de la matriz simultáneamente.
 
-### Character RAM (RAM de Texto)
+### Contadores (Ruta de datos)
 
-* **Capacidad**: 64 bytes (8 columnas $\times$ 8 filas de caracteres).
-* **Bus de dirección de lectura (`rd_adr`)**: 6 bits.
+* **COL:** Lleva la cuenta del píxel actual (0 a 63) y su desbordamiento activa la señal `ZC` (Zero Column).
+* **ROW:** Maneja la fila activa del panel, mapeada directamente a las señales `A, B, C, D, E`. Su desbordamiento activa `ZR` (Zero Row), indicando el fin del cuadro.
+* **count_delay:** Un tercer contador que regula el brillo de la fila comparándose con una constante `DELAY` y disparando la bandera `ZD`.
 
-$$\text{RAM\_addr} = \{\text{CounterY}[5:3], \text{CounterX}[5:3]\}$$
+### Estados de la Máquina de Control (FSM)
 
+* **START / GET_PIXEL:** Reinicia variables y genera un retraso de 1 ciclo para leer la SRAM/BRAM sin colisiones.
+* **INC_COL:** Mantiene el habilitador de reloj del panel en alto (`PX_CLK_EN = 1`) cargando secuencialmente cada pixel en los registros de desplazamiento `R0G0B0` y `R1G1B1`.
+* **SEND_ROW:** Al finalizar la columna de 64 pixeles, levanta el enganche (`LATCH = 1`) volcando los datos a los LEDs, y activa la emisión del panel (`nOE = 0`).
+* **DELAY_ROW:** Bucle que sostiene el estado de encendido (`nOE = 0`) incrementando `count_delay` hasta alcanzar el límite establecido.
+* **INC_ROW & READY_FRAME:** Apaga la matriz (`nOE = 1`), avanza de fila y revisa el fin del dibujo (32 ciclos en total al trabajar en paralelo con las mitades superior e inferior).
 
+![Diagrama de Máquina de Estados (FSM) del Driver de Panel](espacio_para_imagen_fsm.png)
 
-### Font ROM (ROM de Tipografía)
-
-* **Bus de dirección de lectura (`rd_adr`)**: 11 bits (8 bits del código ASCII + 3 bits de la sub-fila del carácter).
-
-$$\text{ROM\_addr} = \{\text{CharacterRAM\_dout}[7:0], \text{CounterY}[2:0]\}$$
-
-
-
-
-
-## Estructura de Bloques para Diagrama de Flujo
-
-Estructura secuencial limpia diseñada para ser plasmada directamente en tu diagrama:
-
-1. **[INICIO]**: Señal de Reset / Reloj (`clk`).
-2. **[PROCESO]**: Asignar `CounterX = 0`, `CounterY = 0`.
-3. **[PROCESO]**: Calcular dirección RAM: `RAM_addr = {CounterY[5:3], CounterX[5:3]}`.
-4. **[LECTURA MEMORIA]**: Leer `CharacterRAM` $\rightarrow$ Obtener `char_code` (ASCII).
-5. **[PROCESO]**: Calcular dirección ROM: `ROM_addr = {char_code, CounterY[2:0]}`.
-6. **[LECTURA MEMORIA]**: Leer `FontROM` $\rightarrow$ Obtener `font_row` (Byte de 8 bits).
-7. **[I/O SALIDA]**: Extraer bit del píxel actual según `CounterX[2:0]` $\rightarrow$ Enviar a `pixel_out`.
-8. **[PROCESO]**: Incrementar `CounterX = CounterX + 1`.
-9. **[DECISIÓN]**: ¿`CounterX == 64`?
-* **NO** $\rightarrow$ *[Conectar al Paso 3]*
-* **SÍ** $\rightarrow$ Avanzar al Paso 10.
-
-
-10. **[PROCESO]**: Reiniciar `CounterX = 0` e Incrementar `CounterY = CounterY + 1`.
-11. **[DECISIÓN]**: ¿`CounterY == 64`?
-* **NO** $\rightarrow$ *[Conectar al Paso 3]*
-* **SÍ** $\rightarrow$ Reiniciar `CounterY = 0` $\rightarrow$ *[Conectar al Paso 3]*
-
-
----
-
-**Referencias:**
-* Arquitectura basada en la documentación original de **fpga4fun**: [Graphic LCD panel 4 - Text](https://www.fpga4fun.com/GraphicLCDpanel4.html)
-* Arquitectura original basada en: [Hardware Sprites - Project F](https://projectf.io/posts/hardware-sprites/)
+![Diagrama de Bloques: Interconexión y Ruta de Datos del Driver](espacio_para_imagen_ruta_de_datos.png)
