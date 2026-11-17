@@ -70,6 +70,9 @@ Documentos principales:
 
 Esta carpeta reúne avances posteriores del código RTL y del firmware de pruebas. Permite dar continuidad a la arquitectura definida en la primera entrega y avanzar hacia su implementación y verificación.
 
+### Entrega 03 — Avances de implementación
+
+
 ## Arquitectura prevista
 
 El diseño contempla los siguientes bloques funcionales:
