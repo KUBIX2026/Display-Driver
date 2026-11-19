@@ -2,6 +2,16 @@
 
 Se Documento e implemento el controlador lógico encargado del dibujado y la generación de señales de hardware para el LED. La arquitectura utiliza diagramas de flujo procesa la pantalla píxel a píxel, evaluando múltiples capas visuales concurrentes.
 
+```mermaid
+flowchart LR
+    MCU["Maestro SPI<br/>(cs, sck, mosi)"] --> RX["Recepción SPI<br/>(spi_receiver + spi_decoder)"]
+    RX -- "Estado confirmado<br/>(BG, slots de sprites)" --> COMP["Creación de imagen<br/>(Compositor + Doble Buffer)"]
+    RX -- "commit_pulse" --> COMP
+    COMP -- "Buffer frontal" --> HUB["Salida HUB75<br/>(matriz LED 64x64)"]
+    HUB -- "Inicio de cuadro<br/>(fin de barrido)" --> COMP
+```
+
+
 
 ## Jerarquía de Renderizado
 El  controlador determina el color final de cada coordenada (
