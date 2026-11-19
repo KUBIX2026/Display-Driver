@@ -1,0 +1,255 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Matriz de caracteres y celdas 8×8 — Flujo RTL</title>
+<style>
+:root{--bg:#f2f4f7;--card:#fbfcfd;--ink:#1b2231;--mut:#5a6477;--ln:#c9d0dc;--ac:#2c56c9;--on:#d9381e;--hi:#cde8bf;--lo:#acd8e6;--ram:#f0c9f7;--led:#20242c;color-scheme:light dark}
+@media(prefers-color-scheme:dark){:root{--bg:#0f141c;--card:#141a24;--ink:#e3e8f1;--mut:#97a3b8;--ln:#2d3748;--ac:#7ea4ff;--on:#ff6a4d;--hi:#2f5225;--lo:#22556a;--ram:#5a2d63;--led:#0b0d11}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 40px;display:grid;gap:16px}
+h1{margin:0;font-size:clamp(22px,3vw,32px)}h2{margin:0 0 4px;font-size:18px}p{margin:0 0 8px;color:var(--mut)}
+.mono,code,td,.bits{font-family:ui-monospace,Menlo,Consolas,monospace}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:8px;padding:16px}
+.row{display:flex;flex-wrap:wrap;gap:20px 28px;align-items:flex-start}
+.map{display:grid;grid-template-columns:repeat(8,44px);gap:3px}
+.map button{height:44px;border:1px solid var(--ln);background:var(--ram);color:var(--ink);border-radius:4px;cursor:pointer;font:600 15px ui-monospace,monospace;padding:0;position:relative}
+.map button small{position:absolute;left:3px;top:1px;font:9px ui-monospace,monospace;color:var(--mut)}
+.map button.sel{outline:3px solid var(--ac)}.map button.pr{box-shadow:inset 0 0 0 3px var(--on)}
+.g{display:grid;grid-template-columns:repeat(8,30px);gap:3px;background:var(--led);padding:6px;border-radius:6px;width:max-content}
+.g button{width:30px;height:30px;border-radius:50%;border:0;background:#3a404c;cursor:pointer;padding:0}
+.g button.on{background:var(--on)}.g button.pr{outline:3px solid #fff}
+.hexcol{display:grid;grid-template-rows:repeat(8,33px);padding-top:6px;font:13px ui-monospace,monospace;color:var(--mut)}
+.hexcol div{display:flex;align-items:center;gap:8px}.hexcol b{color:var(--ink)}
+label{font:500 13px ui-monospace,monospace}input{font:15px ui-monospace,monospace;width:70px;padding:5px 6px;border:1px solid var(--ln);border-radius:4px;background:var(--card);color:var(--ink)}
+button.t{font:600 13px system-ui;padding:6px 10px;border:1px solid var(--ln);border-radius:4px;background:var(--card);color:var(--ink);cursor:pointer}
+table{border-collapse:collapse;font-size:13px}td{padding:4px 10px;border-bottom:1px solid var(--ln)}td:first-child{color:var(--mut)}
+.bits span{padding:2px 4px;border-radius:3px;margin-right:1px}.hi{background:var(--hi)}.lo{background:var(--lo)}
+canvas{width:256px;height:256px;image-rendering:pixelated;border:1px solid var(--ln);border-radius:4px;cursor:crosshair;background:var(--led)}
+pre{margin:0;padding:10px;background:var(--led);color:#e3e8f1;border-radius:6px;font-size:12.5px;max-height:230px;overflow:auto}
+.leg span{display:inline-block;padding:1px 8px;border-radius:3px;margin-right:8px;font-size:12.5px}
+
+/* Estilos del Diagrama de Flujo RTL */
+.flow-wrap{overflow-x:auto;padding-bottom:6px}
+svg.flow{width:100%;min-width:960px;height:auto;display:block;font-family:ui-monospace,Menlo,Consolas,monospace}
+.f-box{fill:var(--card);stroke:var(--ln);stroke-width:1.5}
+.f-hi{fill:var(--hi);stroke:var(--ln);stroke-width:1.2}
+.f-lo{fill:var(--lo);stroke:var(--ln);stroke-width:1.2}
+.f-ram{fill:var(--ram);stroke:var(--ac);stroke-width:1.6}
+.f-rom{fill:var(--card);stroke:var(--on);stroke-width:1.6}
+.f-txt{fill:var(--ink);font-size:12px}
+.f-sub{fill:var(--mut);font-size:10.5px}
+.f-val{fill:var(--ac);font-weight:700;font-size:12px}
+.f-val-on{fill:var(--on);font-weight:700;font-size:12px}
+.f-line{stroke:var(--mut);stroke-width:1.6;fill:none}
+.f-line-hi{stroke:#4a8c38;stroke-width:2;fill:none}
+.f-line-lo{stroke:#2b7a9b;stroke-width:2;fill:none}
+.f-line-on{stroke:var(--on);stroke-width:2.2;fill:none}
+</style></head><body><div class="wrap">
+<header><h1>Matriz de caracteres y celdas 8×8 — Diagrama de Flujo y Memorias</h1>
+<p>Arquitectura completa: creación y carga de celdas (RAM_text), matriz de glifos LED (ROM_fuentes) y selección bit a bit (col, row) → Pixel_text.</p></header>
+
+<!-- NUEVA SECCIÓN: DIAGRAMA DE FLUJO DETALLADO -->
+<section class="card">
+<h2>0 · Diagrama de Flujo: Cargas, Códigos y Creación de Celdas LED</h2>
+<p>Flujo hardware actualizado en tiempo real según el píxel <code>(col, row)</code> o celda seleccionada. Muestra las rutas de carga de datos y la extracción del bit LED.</p>
+<div class="flow-wrap">
+<svg class="flow" viewBox="0 0 1060 390" id="flowSvg">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor"/>
+    </marker>
+    <marker id="arr-hi" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#4a8c38"/>
+    </marker>
+    <marker id="arr-lo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2b7a9b"/>
+    </marker>
+    <marker id="arr-on" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#d9381e"/>
+    </marker>
+  </defs>
+
+  <!-- ETAPA 1: COORDENADAS -->
+  <rect x="12" y="25" width="175" height="90" rx="6" class="f-box"/>
+  <text x="22" y="45" class="f-txt" font-weight="bold">1. Contadores Pantalla</text>
+  <text x="22" y="65" class="f-sub">col (0..63) [6 bits]</text>
+  <text x="22" y="80" class="f-val" id="svg-col">000_011 (3)</text>
+  <text x="22" y="96" class="f-sub">row (0..63) [6 bits]</text>
+  <text x="22" y="110" class="f-val" id="svg-row">000_000 (0)</text>
+
+  <!-- DIVISIÓN DE BITS -->
+  <rect x="215" y="18" width="165" height="52" rx="5" class="f-hi"/>
+  <text x="224" y="36" class="f-txt" font-weight="bold">Bits Altos (Celda 8×8)</text>
+  <text x="224" y="53" class="f-txt" id="svg-hi">col[5:3]=0, row[5:3]=0</text>
+  <text x="224" y="65" class="f-sub">Índice de celda (0..63)</text>
+
+  <rect x="215" y="84" width="165" height="52" rx="5" class="f-lo"/>
+  <text x="224" y="102" class="f-txt" font-weight="bold">Bits Bajos (Pixel LED)</text>
+  <text x="224" y="119" class="f-txt" id="svg-lo">col[2:0]=3, row[2:0]=0</text>
+  <text x="224" y="131" class="f-sub">Posición interna (0..7)</text>
+
+  <!-- Flechas Contadores -> División -->
+  <path d="M 187 55 L 212 44" class="f-line-hi" marker-end="url(#arr-hi)"/>
+  <path d="M 187 95 L 212 108" class="f-line-lo" marker-end="url(#arr-lo)"/>
+
+  <!-- ETAPA 2: CARGA Y CREACIÓN DE CELDAS (RAM_text) -->
+  <rect x="415" y="12" width="245" height="145" rx="6" class="f-ram"/>
+  <text x="425" y="32" class="f-txt" font-weight="bold">2. RAM_text (64 × 8 bits)</text>
+  <text x="425" y="47" class="f-sub">Creación de matriz de posiciones</text>
+  <text x="425" y="66" class="f-txt">Addr_R = {col[5:3], row[5:3]}</text>
+  <text x="425" y="82" class="f-val" id="svg-ram-addr">Addr = 0 (0b000000)</text>
+  <line x1="425" y1="90" x2="650" y2="90" stroke="var(--ln)" stroke-dasharray="3,3"/>
+  <text x="425" y="105" class="f-sub" font-weight="bold">Puerto de Carga (Escritura):</text>
+  <text x="425" y="120" class="f-sub">WE=1 → RAM[celda_sel] &lt;= ASCII</text>
+  <text x="425" y="136" class="f-val" id="svg-ram-out">Dato leido: 65 ('A' / 0x41)</text>
+  <text x="425" y="150" class="f-sub">0x00 = Celda vacía (apagada)</text>
+
+  <!-- Flecha Bits Altos -> RAM_text -->
+  <path d="M 380 44 L 412 44" class="f-line-hi" marker-end="url(#arr-hi)"/>
+
+  <!-- ETAPA 3: CREACIÓN DE MATRIZ LED POR CARÁCTER (ROM_fuentes) -->
+  <rect x="695" y="12" width="350" height="175" rx="6" class="f-rom"/>
+  <text x="705" y="32" class="f-txt" font-weight="bold">3. ROM_fuentes (128 × 8 × 8 bits)</text>
+  <text x="705" y="47" class="f-sub">Carga inicial ($readmemh) de glifos 8×8</text>
+  <text x="705" y="66" class="f-txt">ROM_addr = {char_code[6:0], row[2:0]}</text>
+  <text x="705" y="83" class="f-val-on" id="svg-rom-addr">Addr = {65, 0} = 520 (0x208)</text>
+  <text x="705" y="101" class="f-sub">Cada carácter ocupa 8 bytes (filas 0..7):</text>
+  <text x="705" y="117" class="f-txt" id="svg-rom-base">Base ASCII = char_code × 8</text>
+  <rect x="705" y="126" width="330" height="50" rx="4" fill="var(--led)"/>
+  <text x="715" y="144" fill="#97a3b8" font-size="11">Fila LED leída (8 bits = 8 columnas):</text>
+  <text x="715" y="164" fill="#ff6a4d" font-weight="bold" font-size="13" id="svg-rom-byte">0b00011000 (0x18) [b7 .. b0]</text>
+
+  <!-- Flecha RAM_text -> ROM_fuentes -->
+  <path d="M 660 80 L 692 80" class="f-line-on" marker-end="url(#arr-on)"/>
+  <text x="663" y="72" class="f-sub">ASCII[6:0]</text>
+
+  <!-- Flecha row[2:0] -> ROM_fuentes -->
+  <path d="M 380 118 L 675 118 L 675 95 L 692 95" class="f-line-lo" marker-end="url(#arr-lo)"/>
+  <text x="480" y="113" class="f-sub">row[2:0] selecciona la fila (0..7) del glifo</text>
+
+  <!-- ETAPA 4: SELECCIÓN DE BIT Y SALIDA LED -->
+  <rect x="415" y="220" width="340" height="145" rx="6" class="f-box"/>
+  <text x="425" y="240" class="f-txt" font-weight="bold">4. Multiplexor 8:1 (Selección de LED)</text>
+  <text x="425" y="257" class="f-sub">Orden MSB→LSB: Col[2:0]=0 lee bit 7 (izq)</text>
+  <text x="425" y="275" class="f-txt" id="svg-mux-sel">Bit seleccionado = 7 - col[2:0] = bit 4</text>
+  <text x="425" y="294" class="f-txt" id="svg-mux-bits">Byte: [0][0][0][1][1][0][0][0]</text>
+  <text x="425" y="315" class="f-sub">Si char_code == 0 (celda vacía) → fuerza 0</text>
+  <text x="425" y="340" class="f-val-on" font-size="14" id="svg-pixel-out">SALIDA Pixel_text = 1 (LED ON)</text>
+
+  <!-- Flecha col[2:0] -> MUX 8:1 -->
+  <path d="M 295 136 L 295 270 L 412 270" class="f-line-lo" marker-end="url(#arr-lo)"/>
+  <text x="200" y="255" class="f-sub">col[2:0] (selector 0..7)</text>
+
+  <!-- Flecha ROM byte -> MUX 8:1 -->
+  <path d="M 870 187 L 870 290 L 758 290" class="f-line-on" marker-end="url(#arr-on)"/>
+  <text x="768" y="282" class="f-sub">8 bits de fila</text>
+
+  <!-- BLOQUE RESUMEN DE CARGA MANUAL / VERILOG -->
+  <rect x="12" y="220" width="265" height="145" rx="6" class="f-box"/>
+  <text x="22" y="240" class="f-txt" font-weight="bold">Resumen de Cargas de Memoria</text>
+  <text x="22" y="260" class="f-sub">1) Matriz de Celdas (RAM_text):</text>
+  <text x="22" y="275" class="f-txt">   64 celdas = 8 cols × 8 rows</text>
+  <text x="22" y="290" class="f-sub">   Guarda código ASCII por celda.</text>
+  <text x="22" y="310" class="f-sub">2) Matriz de Carácter (ROM):</text>
+  <text x="22" y="325" class="f-txt">   128 glifos × 8 bytes = 1024 B</text>
+  <text x="22" y="340" class="f-sub">   Dirección: ASCII × 8 + fila</text>
+  <text x="22" y="355" class="f-sub">   Bit 7 = izquierda, Bit 0 = derecha</text>
+
+  <!-- BLOQUE MATRIZ LED FINAL -->
+  <rect x="795" y="310" width="250" height="55" rx="6" class="f-rom"/>
+  <text x="805" y="330" class="f-txt" font-weight="bold">5. Driver Matriz LED 64×64</text>
+  <text x="805" y="348" class="f-val-on" id="svg-led-pos">LED(3, 0) ← Pixel_text</text>
+  <path d="M 755 337 L 792 337" class="f-line-on" marker-end="url(#arr-on)"/>
+</svg>
+</div>
+</section>
+
+<section class="card"><h2>1 · Mapa de posiciones: la pantalla 64×64 son 8×8 celdas</h2>
+<p>Cada celda guarda el <b>código ASCII</b> de su carácter en la RAM de texto. Dirección: <code>Ram_text = {col[5:3], Row[5:3]}</code> (6 bits → 64 entradas). Haz clic en una celda y escribe una letra.</p>
+<div class="row"><div><div class="map" id="map"></div></div>
+<div style="display:grid;gap:10px"><label>Celda elegida <span id="cinfo"></span></label>
+<label>Carácter <input id="chr" maxlength="1" style="width:50px"></label>
+<div class="leg"><span style="background:var(--hi)">bits altos [5:3] → celda</span><span style="background:var(--lo)">bits bajos [2:0] → pixel dentro</span></div>
+<p class="mono" style="font-size:12.5px">RAM_text: 64 × 8 bits<br>ROM_fuentes: 128 caracteres × 8 filas × 8 bits<br>ROM_addr = {char_code[6:0], Row[2:0]} (10 bits)</p></div></div></section>
+
+<section class="card"><h2>2 · Matriz de un carácter: 8 filas × 8 bits</h2>
+<p>Cada carácter son 8 bytes (uno por fila). El bit 7 es el pixel de la izquierda (Col[2:0]=0) y el bit 0 el de la derecha. Clic en los puntos para dibujar o editar el glifo.</p>
+<div class="row"><label>Código <input id="code" type="number" min="0" max="127"></label><span class="mono" id="gname"></span>
+<button class="t" id="clr">Limpiar</button></div>
+<div class="row" style="margin-top:10px"><div class="row" style="gap:6px;flex-wrap:nowrap"><div class="g" id="g"></div><div class="hexcol" id="hx"></div></div>
+<div style="flex:1;min-width:260px"><p>Contenido para la ROM (formato <code>$readmemh</code>):</p><pre id="out"></pre></div></div></section>
+
+<section class="card"><h2>3 · Selección de datos de un pixel</h2>
+<p>Elige un pixel o haz clic en la vista previa. Se parten los bits de col y row: los altos eligen la <i>celda</i>, los bajos eligen la <i>fila del glifo</i> y el <i>bit</i> a leer (mux 8:1).</p>
+<div class="row"><div style="display:grid;gap:8px"><div class="row" style="gap:12px"><label>col <input id="ic" type="number" min="0" max="63" value="3"></label><label>row <input id="ir" type="number" min="0" max="63" value="0"></label></div>
+<div class="tablewrap"><table><tbody id="tb"></tbody></table></div></div>
+<div><canvas id="cv" width="64" height="64"></canvas><p class="mono" style="font-size:12px;margin-top:6px">Vista previa 64×64 (clic = elegir pixel)</p></div></div></section>
+</div>
+<script>
+const $=i=>document.getElementById(i);
+const FONT={65:[0x18,0x24,0x42,0x7E,0x42,0x42,0x42,0],48:[0x3C,0x42,0x46,0x5A,0x62,0x42,0x3C,0],72:[0x42,0x42,0x42,0x7E,0x42,0x42,0x42,0],77:[0x42,0x66,0x5A,0x42,0x42,0x42,0x42,0]};
+const RAM=Array(64).fill(0);[65,48,72,77].forEach((c,i)=>RAM[i*8]=c);
+let cell=0,code=65,C=3,R=0;
+const gl=c=>FONT[c]||(FONT[c]=Array(8).fill(0));
+const nm=c=>c>32&&c<127?'"'+String.fromCharCode(c)+'"':'(sin carácter)';
+const b6=v=>{const s=v.toString(2).padStart(6,'0');return '<span class="bits"><span class="hi">'+s.slice(0,3)+'</span><span class="lo">'+s.slice(3)+'</span></span>'};
+const hx=v=>v.toString(16).toUpperCase().padStart(2,'0');
+
+// mapa
+const map=$('map');
+for(let r=0;r<8;r++)for(let c=0;c<8;c++){const b=document.createElement('button'),i=c*8+r;b.dataset.i=i;
+b.onclick=()=>{cell=i;if(RAM[i])code=RAM[i];draw()};map.appendChild(b)}
+$('chr').oninput=e=>{const v=e.target.value;RAM[cell]=v?v.charCodeAt(0)&127:0;if(RAM[cell])code=RAM[cell];draw()};
+
+// glifo
+const g=$('g');for(let r=0;r<8;r++)for(let c=0;c<8;c++){const b=document.createElement('button');
+b.onclick=()=>{gl(code)[r]^=128>>c;draw()};g.appendChild(b)}
+$('code').oninput=e=>{code=Math.max(0,Math.min(127,+e.target.value||0));draw()};
+$('clr').onclick=()=>{FONT[code]=Array(8).fill(0);draw()};
+$('ic').oninput=$('ir').oninput=()=>{C=Math.max(0,Math.min(63,+$('ic').value||0));R=Math.max(0,Math.min(63,+$('ir').value||0));draw()};
+$('cv').onclick=e=>{const k=e.target.getBoundingClientRect();C=Math.min(63,Math.floor((e.clientX-k.left)/k.width*64));R=Math.min(63,Math.floor((e.clientY-k.top)/k.height*64));$('ic').value=C;$('ir').value=R;draw()};
+
+function draw(){
+ const pc=C>>3,pr=R>>3,pidx=pc*8+pr;
+ [...map.children].forEach(b=>{const i=+b.dataset.i,v=RAM[i];b.innerHTML='<small>'+i+'</small>'+(v?String.fromCharCode(v):'·');
+  b.className=(i===cell?'sel ':'')+(i===pidx?'pr':'')});
+ $('cinfo').textContent='(col '+(cell>>3)+', row '+(cell&7)+') → Ram_text = {'+(cell>>3)+','+(cell&7)+'} = '+cell;
+ $('chr').value=RAM[cell]?String.fromCharCode(RAM[cell]):'';
+ $('code').value=code;$('gname').textContent='ASCII '+code+' = '+nm(code);
+ const f=gl(code),codeCell=RAM[pidx]===code;
+ [...g.children].forEach((b,k)=>{const r=k>>3,c=k&7;b.className=((f[r]>>(7-c))&1?'on ':'')+(codeCell&&r===(R&7)&&c===(C&7)?'pr':'')});
+ $('hx').innerHTML=f.map((v,r)=>'<div>fila '+r+' <b>0x'+hx(v)+'</b></div>').join('');
+ $('out').textContent='// '+nm(code)+' ('+code+') → ROM_addr '+code*8+'..'+(code*8+7)+'\n'+f.map((v,r)=>hx(v)+'   // '+v.toString(2).padStart(8,'0').replace(/0/g,'.').replace(/1/g,'#')).join('\n');
+ 
+ // selección de datos
+ const ch=RAM[pidx],rr=R&7,cb=C&7;let px=0,rows=[['col',C+' = '+b6(C)],['row',R+' = '+b6(R)],['Celda {col[5:3], Row[5:3]}','('+pc+', '+pr+')'],['Ram_text','{'+pc+','+pr+'} = '+pidx]];
+ let fr=0;
+ if(!ch)rows.push(['char_code','0 → celda sin texto']);else{fr=gl(ch)[rr];px=(fr>>(7-cb))&1;
+  rows.push(['char_code','RAM['+pidx+'] = '+ch+' '+nm(ch)],['ROM_addr','{'+ch+', Row[2:0]='+rr+'} = '+(ch*8+rr)],['font_rom','0b'+fr.toString(2).padStart(8,'0')+' (0x'+hx(fr)+')'],
+  ['Selección de bit','Col[2:0]='+cb+' → bit '+(7-cb)+' = '+px])}
+ rows.push(['<b>Pixel_text</b>','<b>'+px+'</b>']);
+ $('tb').innerHTML=rows.map(a=>'<tr><td>'+a[0]+'</td><td>'+a[1]+'</td></tr>').join('');
+
+ // ACTUALIZACIÓN DEL DIAGRAMA DE FLUJO SVG
+ const cBin=C.toString(2).padStart(6,'0'), rBin=R.toString(2).padStart(6,'0');
+ $('svg-col').textContent=cBin.slice(0,3)+'_'+cBin.slice(3)+' ('+C+')';
+ $('svg-row').textContent=rBin.slice(0,3)+'_'+rBin.slice(3)+' ('+R+')';
+ $('svg-hi').textContent='col[5:3]='+pc+', row[5:3]='+pr;
+ $('svg-lo').textContent='col[2:0]='+cb+', row[2:0]='+rr;
+ $('svg-ram-addr').textContent='Addr = '+pidx+' (0b'+pidx.toString(2).padStart(6,'0')+')';
+ $('svg-ram-out').textContent=ch ? 'Dato leído: '+ch+' ('+nm(ch)+' / 0x'+hx(ch)+')' : 'Dato leído: 0 (Celda vacía)';
+ const romAddr=ch*8+rr;
+ $('svg-rom-addr').textContent=ch ? 'Addr = {'+ch+', '+rr+'} = '+romAddr+' (0x'+romAddr.toString(16).toUpperCase()+')' : 'Addr = {0, '+rr+'} (Inactivo)';
+ $('svg-rom-base').textContent=ch ? 'Base ASCII '+ch+' = '+ch+'×8 = '+(ch*8)+'..'+(ch*8+7) : 'Sin carácter asignado en celda';
+ const byteStr=fr.toString(2).padStart(8,'0');
+ $('svg-rom-byte').textContent=ch ? '0b'+byteStr+' (0x'+hx(fr)+') [b7..b0]' : '0b00000000 (0x00)';
+ $('svg-mux-sel').textContent='Bit = 7 - col[2:0] = 7 - '+cb+' = bit '+(7-cb);
+ $('svg-mux-bits').textContent='Bits: '+byteStr.split('').map((b,idx)=>idx===cb?'['+b+']':b).join(' ');
+ $('svg-pixel-out').textContent='SALIDA Pixel_text = '+px+(px?' (LED ON)':' (LED OFF)');
+ $('svg-led-pos').textContent='LED('+C+', '+R+') ← '+px;
+
+ // vista previa
+ const x=$('cv').getContext('2d'),im=x.createImageData(64,64);
+ for(let y=0;y<64;y++)for(let c=0;c<64;c++){const k=RAM[(c>>3)*8+(y>>3)],on=k&&((gl(k)[y&7]>>(7-(c&7)))&1),p=(y*64+c)*4,sel=c===C&&y===R;
+  im.data.set(sel?[255,255,255,255]:on?[255,106,77,255]:[18,21,27,255],p)}
+ x.putImageData(im,0,0)}
+draw();
+</script></body></html>
