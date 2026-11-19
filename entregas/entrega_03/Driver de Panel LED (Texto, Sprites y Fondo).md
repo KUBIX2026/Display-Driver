@@ -1,7 +1,7 @@
 
 # Diagramas de bloques del sistema
  
-## 1. Vista general del sistema
+###  Vista general del sistema
  
 ```mermaid
 flowchart LR
@@ -12,7 +12,7 @@ flowchart LR
     HUB -- "Inicio de cuadro<br/>(fin de barrido)" --> COMP
 ```
  
-## 2. Recepción SPI (spi_receiver + spi_decoder)
+###  Recepción SPI (spi_receiver + spi_decoder)
  
 ```mermaid
 flowchart LR
@@ -24,7 +24,7 @@ flowchart LR
     DEC -- "0x03 COMMIT" --> TRIG["Señal commit_pulse<br/>hacia Creación de Imagen"]
 ```
  
-## 3. Creación de imagen (Compositor + Doble Buffer)
+###  Creación de imagen (Compositor + Doble Buffer)
  
 ```mermaid
 flowchart LR
