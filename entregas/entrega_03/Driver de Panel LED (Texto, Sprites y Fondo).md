@@ -21,7 +21,7 @@ El  controlador determina el color final de cada coordenada (
 - **Nivel 2 (Texto):** Si la capa del sprite está vacía o es transparente, se consulta la matriz de caracteres. Si el píxel forma parte del trazo de una letra (`Pixel_text == 1`), se utiliza el color de fuente asignado.
 - **Nivel 3 (Fondo):** En ausencia de sprites o texto, el sistema recurre a la memoria de imagen general, extrayendo el píxel base usando la dirección unificada `PIX_ADDR = {ROW<<6, COL}`.
 
-![[flujo_renderizado.png]]
+
 
 
 ## Generador de  Sprites
@@ -66,7 +66,5 @@ flowchart LR
     TRANS["Comparador color<br/>== #0F081F (0x0843)"] --> MUX
     MUX --> BACK_BUF["Buffer Trasero<br/>(cuadro en construcción)"]
     BACK_BUF <-- "Intercambio al inicio<br/>de cuadro (fin barrido)" --> FRONT_BUF["Buffer Frontal<br/>(leído por salida HUB75)"]
+```
 
-
-
-![[Generador_texto.png]]
