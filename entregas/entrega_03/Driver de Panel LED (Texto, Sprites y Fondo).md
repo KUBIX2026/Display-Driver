@@ -67,4 +67,5 @@ flowchart LR
     MUX --> BACK_BUF["Buffer Trasero<br/>(cuadro en construcción)"]
     BACK_BUF <-- "Intercambio al inicio<br/>de cuadro (fin barrido)" --> FRONT_BUF["Buffer Frontal<br/>(leído por salida HUB75)"]
 ```
+ 
 
