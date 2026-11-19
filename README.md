@@ -72,7 +72,7 @@ Esta carpeta reúne avances posteriores del código RTL y del firmware de prueba
 
 ### Entrega 03 — Avances de implementación
 
-**[Consultar carpeta de la entrega 03](entregas/entrega_03/Driver de Panel LED (Texto, Sprites y Fondo).md)**
+**[Consultar carpeta de la entrega 03](entregas/entrega_03/Driver_de_Panel_LED.md)**
 
 ## Arquitectura prevista
 
