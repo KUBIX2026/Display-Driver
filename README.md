@@ -72,7 +72,7 @@ Esta carpeta reúne avances posteriores del código RTL y del firmware de prueba
 
 ### Entrega 03 — Avances de implementación
 
-!**[Entrega](entregas/entrega_03/Metodos.md)**
+![Entrega](entregas/entrega_03/Metodos.png)
 
 ## Arquitectura prevista
 
