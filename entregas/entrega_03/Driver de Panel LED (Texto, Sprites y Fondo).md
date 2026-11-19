@@ -32,6 +32,19 @@ Basado en arquitecturas tradicionales de rasterización por hardware, la pantall
 - **Extracción en ROM:** Si el identificador no es 0 (celda vacía), los bits inferiores (`Row[2:0]`) se combinan con el identificador para leer la fila de píxeles correcta desde la ROM del sprite (`Sprite_row`).
 - **Manejo de Transparencia:** Cada píxel almacena datos RGB en 3 bits. El valor `000` se designa como canal alfa puro (transparente), forzando a la lógica a ignorar el sprite e imprimir el contenido de la capa inferior.
 ![[Generador_sprite.png]]
+
+#### ** Recepción SPI (spi_receiver + spi_decoder) **
+ 
+```mermaid
+flowchart LR
+    IN["cs, sck, mosi"] --> SYNC["Sincronizador a 25 MHz<br/>+ Detector de flancos"]
+    SYNC --> SHIFT["Registro de 40 bits<br/>+ Contador de bits"]
+    SHIFT -- "cs sube con 40 bits" --> DEC["spi_decoder<br/>Byte 0: Orden<br/>Bytes 1..4: Parámetros"]
+    DEC -- "0x01 / 0x04" --> SPR_REG["Slots de Sprites<br/>(slot, id, X, Y / hide)"]
+    DEC -- "0x02" --> BG_REG["Registro de Fondo<br/>(id_fondo)"]
+    DEC -- "0x03 COMMIT" --> TRIG["Señal commit_pulse<br/>hacia Creación de Imagen"]
+
+
 ## Generador de Texto
 
 
@@ -41,8 +54,7 @@ Para procesar las fuentes y cadenas de caracteres, se reutiliza la división de 
 - **Decodificación de Caracteres:** La dirección base `Ram_text` apunta a una memoria que devuelve el código ASCII/alfanumérico del carácter (ej. 65 para 'A') contenido en esa cuadrícula.
 - **Mapeo de Fuentes:** Se lee un vector binario desde la ROM de fuentes usando la fila del píxel (`font_rom = ROM[ROM_addr]`). Se verifica si el bit posicional correspondiente a `Col[2:0]` está en estado alto (activo) o bajo (vacío)
 
-
-## 3. Creación de imagen (Compositor + Doble Buffer)
+#### ** Creación de imagen (Compositor + Doble Buffer) **
  
 ```mermaid
 flowchart LR
