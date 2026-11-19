@@ -1,0 +1,34 @@
+# Driver de Panel LED (Texto, Sprites y Fondo)
+
+Se Documento e implemento el controlador lógico encargado del dibujado y la generación de señales de hardware para el LED. La arquitectura utiliza diagramas de flujo procesa la pantalla píxel a píxel, evaluando múltiples capas visuales concurrentes.
+
+
+## Jerarquía de Renderizado
+El  controlador determina el color final de cada coordenada (
+`col`, `row`) aplicando un orden estricto de prioridad de tres niveles (sprite > texto > fondo):
+
+- **Nivel 1 (Sprite):** El módulo comprueba si en la celda actual hay asignado un sprite y si el píxel específico no es de un color transparente. Si `sprite == 1`, se emite su color `Color_out (R, G, B)` y se descartan las capas inferiores.
+- **Nivel 2 (Texto):** Si la capa del sprite está vacía o es transparente, se consulta la matriz de caracteres. Si el píxel forma parte del trazo de una letra (`Pixel_text == 1`), se utiliza el color de fuente asignado.
+- **Nivel 3 (Fondo):** En ausencia de sprites o texto, el sistema recurre a la memoria de imagen general, extrayendo el píxel base usando la dirección unificada `PIX_ADDR = {ROW<<6, COL}`.
+
+![[flujo_renderizado.png]]
+
+
+## Generador de  Sprites
+
+Basado en arquitecturas tradicionales de rasterización por hardware, la pantalla de 64x64 píxeles se segmenta conceptualmente en una cuadrícula de celdas de 8x8 píxeles.
+
+- **Indexación de RAM:** Los bits superiores de las coordenadas de dibujo (`Row[5:3]` y `Col[5:3]`) se concatenan para calcular `ram_addr`, la dirección en la memoria RAM que indica qué `Sprite_ID` ocupa esa celda.
+- **Extracción en ROM:** Si el identificador no es 0 (celda vacía), los bits inferiores (`Row[2:0]`) se combinan con el identificador para leer la fila de píxeles correcta desde la ROM del sprite (`Sprite_row`).
+- **Manejo de Transparencia:** Cada píxel almacena datos RGB en 3 bits. El valor `000` se designa como canal alfa puro (transparente), forzando a la lógica a ignorar el sprite e imprimir el contenido de la capa inferior.
+![[Generador_sprite.png]]
+## Generador de Texto
+
+
+
+Para procesar las fuentes y cadenas de caracteres, se reutiliza la división de celdas de 8x8 con memorias de propósito específico.
+
+- **Decodificación de Caracteres:** La dirección base `Ram_text` apunta a una memoria que devuelve el código ASCII/alfanumérico del carácter (ej. 65 para 'A') contenido en esa cuadrícula.
+- **Mapeo de Fuentes:** Se lee un vector binario desde la ROM de fuentes usando la fila del píxel (`font_rom = ROM[ROM_addr]`). Se verifica si el bit posicional correspondiente a `Col[2:0]` está en estado alto (activo) o bajo (vacío)
+
+![[Generador_texto.png]]
