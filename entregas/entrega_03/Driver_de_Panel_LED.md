@@ -89,5 +89,8 @@ La interconexión de la lógica de píxeles con la matriz física se orquesta me
 * **DELAY_ROW:** Bucle que sostiene el estado de encendido (`nOE = 0`) incrementando `count_delay` hasta alcanzar el límite establecido.
 * **INC_ROW & READY_FRAME:** Apaga la matriz (`nOE = 1`), avanza de fila y revisa el fin del dibujo (32 ciclos en total al trabajar en paralelo con las mitades superior e inferior).
 
+![](/entregas/imgs/diagrama_bloques_integrado.png)
+
+
 ![Diagrama de Máquina de Estados (FSM) del Driver de Panel](espacio_para_imagen_fsm.png)
  
