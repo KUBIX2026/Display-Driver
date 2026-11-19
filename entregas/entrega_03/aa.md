@@ -1,38 +1,41 @@
-### Diagrama de bloques del Controlador HUB75 (Control + Ruta de datos)
+### Diagrama de bloques del Driver (RX + Compositor + TX)
 
 ```mermaid
 flowchart LR
-    subgraph CTRL["CTRL: FSM de control"]
-        FSM["START → GET_PIXEL → INC_COL →<br/>SEND_ROW → DELAY_ROW →<br/>INC_ROW → READY_FRAME"]
+    MASTER(["Maestro SPI<br/>cs, sck, mosi"])
+
+    subgraph RX["RX: Recepción SPI"]
+        SYNC["Sincronizador 25 MHz<br/>+ detector de flancos"]
+        SHREG["Registro de 40 bits<br/>+ contador de bits"]
+        DEC["spi_decoder<br/>Byte 0: orden<br/>Bytes 1..4: parámetros"]
+        SYNC --> SHREG -- "cs sube con 40 bits" --> DEC
     end
 
-    subgraph DP["Ruta de datos"]
-        COL["COL<br/>contador 0..63"]
-        ROW["ROW<br/>contador de fila (A–E)"]
-        DLY["count_delay<br/>comparador vs DELAY"]
-        PIX["Compositor de píxel<br/>sprite > texto > fondo"]
+    subgraph COMP["Compositor + Doble Buffer"]
+        STATE["Estado confirmado<br/>(BG, slots de sprites)"]
+        LAYERS["Sprite > Texto > Fondo<br/>filtro de transparencia"]
+        BACK["Buffer trasero"]
+        FRONT["Buffer frontal"]
+        STATE --> LAYERS --> BACK
+        BACK <-- "swap al fin de barrido" --> FRONT
+    end
+
+    subgraph TX["TX: Controlador HUB75"]
+        CTRL["CTRL (FSM)<br/>START, GET_PIXEL, INC_COL,<br/>SEND_ROW, DELAY_ROW, INC_ROW"]
+        CNT["Contadores<br/>COL, ROW, count_delay"]
         SR["Registros de desplazamiento<br/>R0G0B0 / R1G1B1"]
+        CTRL -- "INC / RST" --> CNT
+        CNT -- "ZC, ZR, ZD" --> CTRL
+        CTRL -- "PX_CLK_EN" --> SR
     end
 
-    RES([RES]) --> FSM
-
-    FSM -- "INC_COL / RST_COL" --> COL
-    FSM -- "INC_ROW" --> ROW
-    FSM -- "INC_DELAY / RST_DELAY" --> DLY
-
-    COL -- "ZC" --> FSM
-    ROW -- "ZR" --> FSM
-    DLY -- "ZD" --> FSM
-
-    COL -- "col" --> PIX
-    ROW -- "row" --> PIX
-    PIX -- "RGB (2 mitades)" --> SR
-
-    FSM -- "PX_CLK_EN" --> SR
-    FSM -- "LATCH, nOE" --> OUT
-    ROW -- "A, B, C, D, E" --> OUT
-    SR -- "R0G0B0, R1G1B1" --> OUT
-    OUT(["Salida HUB75<br/>matriz LED 64x64"])
+    MASTER --> SYNC
+    DEC -- "0x01/0x04 sprites<br/>0x02 fondo" --> STATE
+    DEC -- "0x03 commit_pulse" --> STATE
+    FRONT -- "pixel (col, row)" --> SR
+    CNT -- "col, row" --> FRONT
+    TX --> PANEL(["Panel LED HUB75 64x64<br/>A–E, LATCH, nOE, CLK, RGB"])
+    PANEL -.->|"inicio de cuadro"| COMP
 ```
 
-*Figura X. Diagrama de bloques del controlador: la unidad de control (FSM) genera las señales de incremento, reloj y enganche, y recibe de vuelta las banderas ZC, ZR y ZD desde los contadores.*
+*Figura X. Arquitectura del driver: el bloque RX decodifica los comandos SPI, el compositor arma el cuadro en el buffer trasero y el bloque TX lo envía al panel desde el buffer frontal.*
