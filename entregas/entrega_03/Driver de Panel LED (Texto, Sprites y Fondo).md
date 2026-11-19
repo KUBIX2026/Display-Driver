@@ -54,7 +54,7 @@ Para procesar las fuentes y cadenas de caracteres, se reutiliza la división de 
 - **Decodificación de Caracteres:** La dirección base `Ram_text` apunta a una memoria que devuelve el código ASCII/alfanumérico del carácter (ej. 65 para 'A') contenido en esa cuadrícula.
 - **Mapeo de Fuentes:** Se lee un vector binario desde la ROM de fuentes usando la fila del píxel (`font_rom = ROM[ROM_addr]`). Se verifica si el bit posicional correspondiente a `Col[2:0]` está en estado alto (activo) o bajo (vacío)
 
-#### ** Creación de imagen (Compositor + Doble Buffer) **
+####  Creación de imagen (Compositor + Doble Buffer) 
  
 ```mermaid
 flowchart LR
